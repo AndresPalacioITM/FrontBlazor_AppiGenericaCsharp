@@ -1,0 +1,1 @@
+# FrontBlazor_AppiGenericaCsharp
