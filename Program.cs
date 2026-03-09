@@ -13,6 +13,9 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri("http://localhost:5230")
 });
 
+// Registrar el servicio ApiService para manejar las llamadas a la API
+builder.Services.AddScoped<FrontBlazor_AppiGenericaCsharp.Services.ApiService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
