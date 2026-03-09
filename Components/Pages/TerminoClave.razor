@@ -10,7 +10,7 @@
     @* ───────── ALERTA DE EXITO O ERROR ───────── *@
     @if (!string.IsNullOrEmpty(mensaje))
     {
-        <div class="alert @(exito ? "alert-success" : "alert-danger") alert-dismissible fade show">
+        <div class="alert @(exito ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
             @mensaje
             <button type="button" class="btn-close" @onclick="() => mensaje = string.Empty"></button>
         </div>
@@ -121,8 +121,23 @@
     private async Task CargarRegistros()
     {
         cargando = true;
-        registros = await Api.ListarAsync("termino_clave");
-        cargando = false;
+        mensaje = string.Empty;
+        try
+        {
+            var resultado = await Api.ListarAsync("termino_clave");
+            registros = resultado ?? new List<Dictionary<string, object?>>();
+             // Si la respuesta es nula, inicializa con lista vacia
+        }
+        catch (Exception ex)
+        {
+            registros = new List<Dictionary<string, object?>>();
+            mensaje = $"Error al cargar los datos: {ex.Message}";
+                exito = false;
+        }
+        finally
+        {
+            cargando = false;
+        }        
     }
      // Muestra el formulario vacio para crear un nuevo registro
     private void NuevoRegistro()
