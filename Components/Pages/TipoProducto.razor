@@ -1,11 +1,11 @@
-@page "/Proyecto"
+@page "/Tipo_producto"
 @rendermode InteractiveServer
 @inject FrontBlazor_AppiGenericaCsharp.Services.ApiService Api
 
-<PageTitle>Proyecto</PageTitle>
+<PageTitle>Tipo_producto</PageTitle>
 
 <div class="container mt-4">
-    <h3>Proyecto</h3>
+    <h3>Tipo_producto</h3>
 
     @* ───────── ALERTA DE EXITO O ERROR ───────── *@
     @if (!string.IsNullOrEmpty(mensaje))
@@ -18,14 +18,14 @@
     @* ───────── BOTON PARA MOSTRAR FORMULARIO DE CREAR ───────── *@
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Proyecto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Tipo_producto</button>
     }
     @* ───────── FORMULARIO (CREAR / EDITAR) ───────── *@
     @if (mostrarFormulario)
     {
         <div class="card mb-3">
             <div class="card-header">
-                @(editando ? "Editar Proyecto" : "Nuevo Proyecto")
+                @(editando ? "Editar Tipo_producto" : "Nuevo Tipo_producto")
             </div>
             <div class="card-body">
                 <div class="row">
@@ -34,33 +34,21 @@
                         <input class="form-control" type="number" @bind="campoId" disabled="@editando" />
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Titulo</label>
-                        <input class="form-control" @bind="campoTitulo" />
+                        <label class="form-label">Categoria</label>
+                        <input class="form-control" @bind="campoCategoria" />
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Resumen</label>
-                        <input class="form-control" @bind="campoResumen" />
+                        <label class="form-label">Clase</label>
+                        <input class="form-control" @bind="campoClase" />
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Presupuesto</label>
-                        <input class="form-control" type="number" step="0.01" @bind="campoPresupuesto" />
+                        <label class="form-label">Nombre</label>
+                        <input class="form-control" @bind="campoNombre" />
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class ="form-label">Tipo_financiacion</label>
-                        <input class="form-control" @bind="campoTipoFinanciacion" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class ="form-label">Tipo_fondos</label>
-                        <input class="form-control" @bind="campoTipoFondos" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class ="form-label">Fecha_inicio</label>
-                        <input class="form-control" type="date" @bind="campoFechaInicio" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class ="form-label">Fecha_fin</label>
-                        <input class="form-control" type="date" @bind="campoFechaFin" />
-                    </div>
+                        <label class ="form-label">Topologia</label>
+                        <input class="form-control" @bind="campoTopologia" />
+                    </div>                    
                 </div>
                 <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>
                 <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
@@ -82,13 +70,10 @@
             <thead class="table-dark">
                 <tr>
                     <th>Id</th>
-                    <th>Titulo</th>
-                    <th>Resumen</th>
-                    <th>Presupuesto</th>
-                    <th>Tipo_financiacion</th>
-                    <th>Tipo_fondos</th>
-                    <th>Fecha_inicio</th>
-                    <th>Fecha_fin</th>
+                    <th>Categoria</th>
+                    <th>Clase</th>
+                    <th>Nombre</th>
+                    <th>Topologia</th>                    
                 </tr>
             </thead>
             <tbody>
@@ -96,12 +81,10 @@
                 {
                     <tr>
                         <td>@reg["id"]</td>
-                        <td>@reg["titulo"]</td>
-                        <td>@reg["resumen"]</td>
-                        <td>@reg["presupuesto"]</td>
-                        <td>@reg["tipo_financiacion"]</td>
-                        <td>@reg["tipo_fondos"]</td>
-                        <td>@reg["fecha_inicio"]</td>
+                        <td>@reg["categoria"]</td>
+                        <td>@reg["clase"]</td>
+                        <td>@reg["nombre"]</td>
+                        <td>@reg["topologia"]</td>
                         <td>@reg["fecha_fin"]</td>
                         <td>
                             <button class="btn btn-warning btn-sm me-1"
@@ -121,7 +104,7 @@
      @* ───────── MENSAJE CUANDO NO HAY DATOS ───────── *@
     @if (!cargando && !registros.Any())
     {
-        <div class="alert alert-warning">No se encontraron registros en la tabla proyecto.</div>
+        <div class="alert alert-warning">No se encontraron registros en la tabla tipo_producto.</div>
     }
 </div>
 @code 
@@ -142,13 +125,10 @@
     private bool exito = false;
     // Campos del formulario
     private int campoId = 0;
-    private string campoTitulo = string.Empty;
-    private string campoResumen = string.Empty;
-    private double campoPresupuesto = 0;
-    private string campoTipoFinanciacion = string.Empty;
-    private string campoTipoFondos = string.Empty;
-    private DateTime campoFechaInicio = DateTime.MinValue;
-    private DateTime campoFechaFin = DateTime.MinValue;
+    private string campoCategoria = string.Empty;
+    private string campoClase = string.Empty;
+    private string campoNombre = string.Empty;
+    private string campoTopologia = string.Empty;
 
     // ───────── CICLO DE VIDA ─────────
 
@@ -163,7 +143,7 @@
     private async Task CargarRegistros()
     {
         cargando = true;
-        registros = await Api.ListarAsync("proyecto");
+        registros = await Api.ListarAsync("tipo_producto");
         cargando = false;
     }
      // Muestra el formulario vacio para crear un nuevo registro
@@ -171,13 +151,10 @@
     {
         editando = false;
         campoId = 0;
-        campoTitulo = string.Empty;
-        campoResumen = string.Empty;
-        campoPresupuesto = 0;
-        campoTipoFinanciacion = string.Empty;
-        campoTipoFondos = string.Empty;
-        campoFechaInicio = DateTime.MinValue;
-        campoFechaFin = DateTime.MinValue;
+        campoCategoria = string.Empty;
+        campoClase = string.Empty;
+        campoNombre = string.Empty;
+        campoTopologia = string.Empty;        
         mostrarFormulario = true;
         mensaje = string.Empty;
     }
@@ -186,13 +163,10 @@
     {
         editando = true;
         campoId = int.TryParse(reg["id"]?.ToString(), out int id) ? id : 0;
-        campoTitulo = reg["titulo"]?.ToString() ?? "";
-        campoResumen = reg["resumen"]?.ToString() ?? "";
-        campoPresupuesto = double.TryParse(reg["presupuesto"]?.ToString(), out double p) ? p : 0;
-        campoTipoFinanciacion = reg["tipo_financiacion"]?.ToString() ?? "";
-        campoTipoFondos = reg["tipo_fondos"]?.ToString() ?? "";
-        campoFechaInicio = DateTime.TryParse(reg["fecha_inicio"]?.ToString(), out DateTime fInicio) ? fInicio : DateTime.MinValue;
-        campoFechaFin = DateTime.TryParse(reg["fecha_fin"]?.ToString(), out DateTime fFin) ? fFin : DateTime.MinValue;
+        campoCategoria = reg["categoria"]?.ToString() ?? "";
+        campoClase = reg["clase"]?.ToString() ?? "";
+        campoNombre = reg["nombre"]?.ToString() ?? "";
+        campoTopologia = reg["topologia"]?.ToString() ?? "";
         mostrarFormulario = true;
         mensaje = string.Empty;
     }
@@ -203,28 +177,25 @@
         var datos = new Dictionary<string, object?>
         {
             ["id"] = campoId,
-            ["titulo"] = campoTitulo,
-            ["resumen"] = campoResumen,
-            ["presupuesto"] = campoPresupuesto,
-            ["tipo_financiacion"] = campoTipoFinanciacion,
-            ["tipo_fondos"] = campoTipoFondos,
-            ["fecha_inicio"] = campoFechaInicio,
-            ["fecha_fin"] = campoFechaFin
+            ["categoria"] = campoCategoria,
+            ["clase"] = campoClase,
+            ["nombre"] = campoNombre,
+            ["topologia"] = campoTopologia,
         };
 
         if (editando)
         {
-            // PUT /api/proyecto/id/{valor}
+            // PUT /api/tipo_producto/id/{valor}
             // No incluimos el id en los datos porque es la clave
             datos.Remove("id");
-            var resultado = await Api.ActualizarAsync("proyecto", "id", campoId.ToString(), datos);
+            var resultado = await Api.ActualizarAsync("tipo_producto", "id", campoId.ToString(), datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
         }
         else
         {
-            // POST /api/proyecto
-            var resultado = await Api.CrearAsync("proyecto", datos);
+            // POST /api/tipo_producto
+            var resultado = await Api.CrearAsync("tipo_producto", datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
         }
@@ -240,8 +211,8 @@
     {
         string id = reg["id"]?.ToString() ?? "";
 
-        // DELETE /api/proyecto/id/{valor}
-        var resultado = await Api.EliminarAsync("proyecto", "id", id);
+        // DELETE /api/tipo_producto/id/{valor}
+        var resultado = await Api.EliminarAsync("tipo_producto", "id", id);
         exito = resultado.exito;
         mensaje = resultado.mensaje;
 
