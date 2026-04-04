@@ -1,0 +1,219 @@
+@page "/Producto"
+@rendermode InteractiveServer
+@inject FrontBlazor_AppiGenericaCsharp.Services.ApiService Api
+
+<PageTitle>Producto</PageTitle>
+<div class ="container mt-4">
+    <h3>Producto</h3>
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+        <div class="alert @(exito ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+            @mensaje
+            <button type="button" class="btn-close" @onclick="() => mensaje = string.Empty"></button>
+        </div>
+    }
+    @if (!mostrarFormulario)
+    {
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Producto</button>
+    }
+    @if (mostrarFormulario)
+    {
+        <div class="card mb-3">
+            <div class="card-headeproyector">
+                @(editando ? "Editar Producto" : "Nuevo Producto")
+            </div>
+            <div class="car-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Id</label>
+                        <input class="form-control" type="number" @bind="campoId" disabled="@editando"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <input class="form-control" @bind="campoNombre"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Categoria</label>
+                        <input class="form-control" @bind="campoCategoria"/>
+                    </div>                    
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha_entrega</label>
+                        <input class="form-control" type="date" @bind="campoFechaEntrega"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Proyecto</label>
+                        <input class="form-control" type="number" @bind="campoProyecto"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo_Producto</label>
+                        <input class="form-control" type="number" @bind="campoTipoProducto"/>
+                    </div>
+                </div>
+                <button class="btn btn-success" @onclick="GuardarRegistro">Guardar</button>
+                <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </div>
+    }
+    @if (cargando)
+    {
+        <div class="d-flex justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    }
+    @if(!cargando && registros.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Categoria</th>
+                    <th>Fecha_entrega</th>
+                    <th>Proyecto</th>
+                    <th>Tipo_Producto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var reg in registros)
+                {
+                    <tr>
+                        <td>@reg["id"]</td>
+                        <td>@reg["nombre"]</td>
+                        <td>@reg["categoria"]</td>
+                        <td>@reg["fecha_entrega"]</td>
+                        <td>@reg["proyecto"]</td>
+                        <td>@reg["tipo_producto"]</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm me-1" @onclick="() => EditarRegistro(reg)">Editar</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => EliminarRegistro(reg)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    @if (!cargando && !registros.Any())
+    {
+        <div class="alert alert-warning">No se encontraron registros en la tabla Producto. Haz clic en "Nuevo Proyecto" para agregar uno.</div>      
+    }
+</div>
+@code
+{
+    private List<Dictionary<string, object?>> registros = new();
+    private bool cargando = true;
+    private bool mostrarFormulario = false;
+    private bool editando = false;
+    private string mensaje = string.Empty;
+    private bool exito = false;
+
+    // Campos del formulario
+    private int campoId = 0;
+    private string campoNombre = string.Empty;
+    private string campoCategoria = string.Empty;
+    private DateTime campoFechaEntrega = DateTime.Today;
+    private int campoProyecto = 0; 
+    private int campoTipoProducto = 0; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarRegistros();
+    }
+
+    private async Task CargarRegistros()
+    {
+        cargando = true;
+        mensaje = string.Empty;
+        try
+        {
+            
+            var resultado = await Api.ListarAsync("producto");
+            registros = resultado ?? new List<Dictionary<string, object?>>();
+                // si la API devuelve null, se asigna una lista vacía para evitar errores
+        }
+        catch (Exception ex)
+        {
+            registros = new List<Dictionary<string, object?>>();
+            mensaje = $"Error al cargar datos: {ex.Message}";
+                exito = false;
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+    private void NuevoRegistro()
+    {
+        editando = false;
+        campoId = 0;
+        campoNombre = string.Empty;
+        campoCategoria = string.Empty;
+        campoFechaEntrega = DateTime.Today;
+        campoProyecto = 0;
+        campoTipoProducto = 0;
+        mostrarFormulario = true; 
+        mensaje = string.Empty;
+    }
+    private void EditarRegistro(Dictionary<string, object?> reg)
+        {
+            editando = true;
+            campoId = int.TryParse(reg["id"]?.ToString(), out int id) ? id : 0;
+            campoNombre = reg["nombre"]?.ToString() ?? string.Empty;
+            campoCategoria = reg["categoria"]?.ToString() ?? string.Empty;
+            campoFechaEntrega = DateTime.TryParse(reg["fecha_entrega"]?.ToString(), out var fecha) ? fecha : DateTime.Today;
+            campoProyecto = int.TryParse(reg["proyecto"]?.ToString(), out int proyecto) ? proyecto : 0;
+            campoTipoProducto = int.TryParse(reg["tipo_producto"]?.ToString(), out int tipoProducto) ? tipoProducto : 0;
+            mostrarFormulario = true;
+            mensaje = string.Empty;
+        }
+    private async Task GuardarRegistro()
+    {
+        var datos = new Dictionary<string, object?>
+        {
+        ["nombre"] = campoNombre,
+        ["categoria"] = campoCategoria,
+        ["fecha_entrega"] = campoFechaEntrega,
+        ["proyecto"] = campoProyecto,
+        ["tipo_producto"] = campoTipoProducto
+
+        };
+        if (editando)
+        {
+            //PUT /api/Producto/id/{valor}
+            // No incluimos el id en los datos porque es la clave
+            datos.Remove("id");
+            var resultado = await Api.ActualizarAsync("producto", "id", campoId.ToString(), datos);
+            exito = resultado.exito;
+            mensaje = resultado.mensaje;
+        }
+        else
+        {
+            //POST /api/Producto
+            var resultado = await Api.CrearAsync("producto", datos);
+            exito = resultado.exito;
+            mensaje = resultado.mensaje;
+        }
+        if (exito)
+        {
+            await CargarRegistros(); //recargar la lista para mostrar los cambios
+            mostrarFormulario = false;
+        }
+    }
+    private async Task EliminarRegistro(Dictionary<string, object?> reg)
+        {
+            string id = reg["id"]?.ToString() ?? "";
+            var resultado = await Api.EliminarAsync("producto", "id",id);
+            exito = resultado.exito;
+            mensaje = resultado.mensaje;
+            if (exito)
+            {
+                await CargarRegistros(); //recargar la lista para mostrar los cambios
+            }
+        }
+    private void Cancelar()
+    {
+        mostrarFormulario = false;
+        mensaje = string.Empty; 
+    }
+}
