@@ -171,12 +171,11 @@
     {
         var datos = new Dictionary<string, object?>
         {
-        ["nombre"] = campoNombre,
-        ["categoria"] = campoCategoria,
-        ["fecha_entrega"] = campoFechaEntrega,
-        ["proyecto"] = campoProyecto,
-        ["tipo_producto"] = campoTipoProducto
-
+            ["nombre"] = campoNombre,
+            ["categoria"] = campoCategoria,
+            ["fecha_entrega"] = campoFechaEntrega,
+            ["proyecto"] = campoProyecto,
+            ["tipo_producto"] = campoTipoProducto
         };
         if (editando)
         {
@@ -210,7 +209,7 @@
             {
                 await CargarRegistros(); //recargar la lista para mostrar los cambios
             }
-        }
+    }
     private void Cancelar()
     {
         mostrarFormulario = false;
