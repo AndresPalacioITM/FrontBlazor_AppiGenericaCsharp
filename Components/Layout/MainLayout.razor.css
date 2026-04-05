@@ -96,3 +96,32 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+/* Asegurar que la pagina ocupe toda la altura del viewport */
+.page {
+    min-height: 100vh;
+}
+
+/* main como columna flexible*/
+main {
+    flex: 1;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+}
+footer{
+    margin-top: auto;
+}
+@media (max-width: 640.98px) {
+    .navbar-toggler {
+        display: block;
+    }
+    .nav-scrollable.collapse {
+        display: none;
+    }
+    .nav-scrollable.show {
+        display: block;
+    }
+}
