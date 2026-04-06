@@ -148,7 +148,7 @@
         catch (Exception ex)
         {
             registros = new List<Dictionary<string, object?>>();
-            mensaje = $"Error al cargar registros: {ex.Message}";
+            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
             exito = false;
         }
         finally

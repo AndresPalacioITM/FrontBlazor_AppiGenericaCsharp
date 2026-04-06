@@ -30,18 +30,16 @@
                 @(editando ? "Editar Objetivo_desarrollo_sostenible" : "Nuevo Objetivo_desarrollo_sostenible")
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row">                    
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Id</label>
-                        <input class="form-control" type="number" @bind="campoId" disabled="@editando" />
+                        <label class="form-label fw-bold">Nombre</label>
+                        <input class="form-control" @bind="campoNombre" placeholder="Ej. Meta 1, Meta 2, etc." />
+                        <small class="text-muted">Ingrese el nombre del objetivo</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input class="form-control" @bind="campoNombre" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Categoria</label>
-                        <input class="form-control" @bind="campoCategoria" />
+                        <label class="form-label fw-bold">Categoria</label>
+                        <input class="form-control" @bind="campoCategoria" placeholder="Ej. Educación, Salud, etc." />
+                        <small class="text-muted">Ingrese la categoría del objetivo</small>
                     </div>
                 </div>
                 <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>
@@ -140,7 +138,7 @@
         catch (Exception ex)
         {
             registros = new List<Dictionary<string, object?>>();
-            mensaje = $"Error al cargar los datos: {ex.Message}";
+            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
                 exito = false;
         }
         finally
@@ -173,8 +171,7 @@
     {
         // Arma el diccionario con los datos del formulario
         var datos = new Dictionary<string, object?>
-        {
-            //["id"] = campoId, //
+        {            
             ["nombre"] = campoNombre,
             ["categoria"] = campoCategoria
         };
@@ -182,8 +179,6 @@
         if (editando)
         {
             // PUT /api/objetivo_desarrollo_sostenible/id/{valor}
-            // No incluimos el id en los datos porque es la clave
-            datos.Remove("id");
             var resultado = await Api.ActualizarAsync("objetivo_desarrollo_sostenible", "id", campoId.ToString(), datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
@@ -192,8 +187,6 @@
         if (editando)
         {
             // PUT /api/proyecto/id/{valor}
-            // No incluimos el id en los datos porque es la clave
-            datos.Remove("id");
             var resultado = await Api.ActualizarAsync("objetivo_desarrollo_sostenible", "id", campoId.ToString(), datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;

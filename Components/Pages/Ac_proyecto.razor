@@ -14,7 +14,7 @@
     }
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Ac_proyecto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Ac_proyecto</button>
     }
     @if (mostrarFormulario)
     {
@@ -24,13 +24,31 @@
             </div>
             <div class="car-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Proyecto</label>
-                        <input class="form-control" type="number" @bind="campoProyecto"/>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Proyecto</label>
+                        <select class="form-control" @bind="campoProyecto">
+                            <option value="0">-- Seleccione un proyecto --</option>
+                            @foreach (var proyecto in listaProyectos)
+                            {
+                                var idProyecto = Convert.ToInt32(proyecto["id"]);
+                                var nombreProyecto = proyecto["titulo"]?.ToString() ?? $"Proyecto {idProyecto}";
+                                <option value="@idProyecto">@nombreProyecto</option>
+                            }
+                        </select>
+                        <small class="text-muted">Seleccione el proyecto</small>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Area de conocimiento</label>
-                        <input class="form-control" type="number" @bind="campoAreaConocimiento"/>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Area de conocimiento</label>
+                        <select class="form-control" @bind="campoAreaConocimiento">
+                            <option value="0">-- Seleccione un área de conocimiento --</option>
+                            @foreach (var area in listaAreasConocimiento)
+                            {
+                                var idArea = Convert.ToInt32(area["id"]);
+                                var nombreArea = $"{area["gran_area"]} - {area["area"]} - {area["disciplina"]}";
+                                <option value="@idArea">@nombreArea</option>
+                            }
+                        </select>
+                        <small class="text-muted">Seleccione el área de conocimiento</small>
                     </div>
                 </div>
                 <button class="btn btn-success" @onclick="GuardarRegistro">Guardar</button>
@@ -52,7 +70,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>Proyecto</th>
-                    <th>Area_Conocimiento</th>                    
+                    <th>Area de Conocimiento</th>                    
                 </tr>
             </thead>
             <tbody>
@@ -78,6 +96,8 @@
 @code
 {
     private List<Dictionary<string, object?>> registros = new();
+    private List<Dictionary<string, object?>> listaProyectos = new();
+    private List<Dictionary<string, object?>> listaAreasConocimiento = new();
     private bool cargando = true;
     private bool mostrarFormulario = false;
     private bool editando = false;
@@ -88,7 +108,24 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CargarCatalogos();
         await CargarRegistros();
+    }
+
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var proyecto = await Api.ListarAsync("proyecto");
+            listaProyectos = proyecto ?? new();
+            var areaConocimiento = await Api.ListarAsync("area_conocimiento");
+            listaAreasConocimiento = areaConocimiento ?? new();
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error al cargar catálogos: {ex.Message}";
+            exito = false;
+        }
     }
 
     private async Task CargarRegistros()
@@ -120,13 +157,20 @@
     private void EditarRegistro(Dictionary<string, object?> reg)
     {
         editando = true;
-        campoProyecto = int.TryParse(reg["proyecto"]?.ToString(), out int proyecto) ? proyecto : 0;
-        campoAreaConocimiento = int.TryParse(reg["area_conocimiento"]?.ToString(), out int areaConocimiento) ? areaConocimiento : 0;
+        campoProyecto = Convert.ToInt32(reg["proyecto"]);
+        campoAreaConocimiento = Convert.ToInt32(reg["area_conocimiento"]);
         mostrarFormulario = true;
         mensaje = string.Empty;
     }
     private async Task GuardarRegistro()
         {
+            //validacion de campos
+            if (campoProyecto <= 0 ){mensaje = "Debe seleccionar un proyecto valido."; exito = false; return;}
+            if (campoAreaConocimiento <= 0 ){mensaje = "Debe seleccionar un área de conocimiento valida."; exito = false; return;}
+
+            //validacion para nuevos registros
+            if (!editando){bool yaExiste = registros.Any(r => Convert.ToInt32(r["proyecto"]) == campoProyecto && Convert.ToInt32(r["area_conocimiento"]) == campoAreaConocimiento);
+                if (yaExiste ){mensaje = "Ya existe una relacion entre ese proyecto y esa area de conocimiento. No se puede duplicar."; exito = false; return;}}
             var datos = new Dictionary<string, object?>
                 {
                     ["proyecto"] = campoProyecto,
@@ -135,7 +179,6 @@
                 if (editando)
                 {
                     //PUT
-                    datos.Remove("proyecto");
                     var resultado = await Api.ActualizarAsync("ac_proyecto", "proyecto", campoProyecto.ToString(), datos);
                     exito = resultado.exito;
                     mensaje = resultado.mensaje;

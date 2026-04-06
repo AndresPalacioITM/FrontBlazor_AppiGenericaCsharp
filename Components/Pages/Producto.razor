@@ -38,7 +38,7 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Categoría</label>
-                        <input class="form-control" @bind="campoCategoria" />
+                        <input class="form-control" @bind="campoCategoria" placeholder="Ej. tecnología, innovación, investigación..."/>
                         <small class="text-muted">Categoría del producto (opcional)</small>
                     </div>
 
@@ -186,7 +186,7 @@
         catch (Exception ex)
         {
             registros = new();
-            mensaje = $"Error al cargar datos: {ex.Message}";
+            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
             exito = false;
         }
         finally

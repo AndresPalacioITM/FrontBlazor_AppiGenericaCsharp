@@ -30,13 +30,13 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Termino</label>
-                        <input class="form-control" @bind="campoTermino" disabled="@editando" />
+                        <label class="form-label fw-bold">Termino</label>
+                        <input class="form-control" @bind="campoTermino" disabled="@editando" placeholder="Ej. Tecnología, Innovación, etc." />
                         <small class="text-muted">Coloque las palabras claves del proyecto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Termino_ingles</label>
-                        <input class="form-control" @bind="campoTerminoIngles" />
+                        <label class="form-label fw-bold">Termino_ingles</label>
+                        <input class="form-control" @bind="campoTerminoIngles" placeholder="Ej. Technology, Innovation, etc." />
                         <small class="text-muted">Coloque las palabras claves en ingles del proyecto (opcional)</small>
                     </div>                 
                 </div>
@@ -133,7 +133,7 @@
         catch (Exception ex)
         {
             registros = new List<Dictionary<string, object?>>();
-            mensaje = $"Error al cargar los datos: {ex.Message}";
+            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
                 exito = false;
         }
         finally

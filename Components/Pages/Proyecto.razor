@@ -33,23 +33,23 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Título</label>
-                        <input class="form-control" @bind="campoTitulo" />
+                        <label class="form-label fw-bold">Título</label>
+                        <input class="form-control" @bind="campoTitulo" placeholder="Ej. Desarrollo de software, investigación, etc." />
                         <small class="text-muted">Ingrese el nombre del proyecto</small>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="form-label">Resumen</label>
-                        <textarea class="form-control" rows="3" @bind="campoResumen"></textarea>
+                        <label class="form-label fw-bold">Resumen</label>
+                        <textarea class="form-control" rows="3" @bind="campoResumen" placeholder="Ej. Breve descripción del proyecto..."></textarea>
                         <small class="text-muted">Ingrese el resumen del proyecto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Presupuesto (COP)</label>
-                        <input class="form-control" type="number" step="0.01" @bind="campoPresupuesto" />
+                        <label class="form-label fw-bold">Presupuesto (COP)</label>
+                        <input class="form-control" type="number" step="0.01" @bind="campoPresupuesto" placeholder="Ej. 1000000" />
                         <small class="text-muted">Ingrese el valor en COP del proyecto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Tipo de financiación</label>
-                        <select class="form-select" @bind="campoTipoFinanciacion">
+                        <label class="form-label fw-bold">Tipo de financiación</label>
+                        <select class="form-select" @bind="campoTipoFinanciacion" placeholder="Seleccione el tipo de financiación">
                             <option value="">Seleccione...</option>
                             <option value="Interna">Interna</option>
                             <option value="Externa">Externa</option>
@@ -58,8 +58,8 @@
                         <small class="text-muted">Financiación fue interna, externa o cofinanciado</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Tipo de fondos</label>
-                        <select class="form-select" @bind="campoTipoFondos">
+                        <label class="form-label fw-bold">Tipo de fondos</label>
+                        <select class="form-select" @bind="campoTipoFondos" placeholder="Seleccione el tipo de fondos">
                             <option value="">Seleccione...</option>
                             <option value="Público">Público</option>
                             <option value="Privado">Privado</option>
@@ -68,12 +68,12 @@
                         <small class="text-muted">Los fondos fueron de origen público, privado o mixto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Fecha de inicio</label>
+                        <label class="form-label fw-bold">Fecha de inicio</label>
                         <input class="form-control" type="date" @bind="campoFechaInicio" />
                         <small class="text-muted">Seleccione la fecha de inicio</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Fecha de fin</label>
+                        <label class="form-label fw-bold">Fecha de fin</label>
                         <input class="form-control" type="date" @bind="campoFechaFin" />
                         <small class="text-muted">Seleccione la fecha de finalización (activo)</small>
                     </div>
@@ -184,7 +184,7 @@
         catch (Exception ex)
         {
             registros = new List<Dictionary<string, object?>>();
-            mensaje = $"Error al cargar los datos: {ex.Message}";
+            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
             exito = false;
         }
         finally

@@ -30,23 +30,23 @@
             <div class="card-body">
                 <div class="row">                    
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Categoria</label>
-                        <input class="form-control" @bind="campoCategoria" />
+                        <label class="form-label fw-bold">Categoria</label>
+                        <input class="form-control" @bind="campoCategoria" placeholder="Ej. Tecnología, Innovación, etc." />
                         <small class="text-muted">Ingrese la categoría del producto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Clase</label>
-                        <input class="form-control" @bind="campoClase" />
+                        <label class="form-label fw-bold">Clase</label>
+                        <input class="form-control" @bind="campoClase" placeholder="Ej. Electrónica, Mecánica, etc." />
                         <small class="text-muted">Ingrese la clase del producto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input class="form-control" @bind="campoNombre" />
+                        <label class="form-label fw-bold">Nombre</label>
+                        <input class="form-control" @bind="campoNombre" placeholder="Ej. Laptop, Smartphone, etc." />
                         <small class="text-muted">Ingrese el nombre del producto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class ="form-label">Tipologia</label>
-                        <input class="form-control" @bind="campoTipologia" />
+                        <label class ="form-label fw-bold">Tipologia</label>
+                        <input class="form-control" @bind="campoTipologia" placeholder="Ej. Producto Final, Componente, etc." />
                         <small class="text-muted">Ingrese la tipología del producto</small>
                     </div>                    
                 </div>
@@ -152,7 +152,7 @@
         catch (Exception ex)
         {
             registros = new List<Dictionary<string, object?>>();
-            mensaje = $"Error al cargar los datos: {ex.Message}";
+            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
                 exito = false;
         }
         finally

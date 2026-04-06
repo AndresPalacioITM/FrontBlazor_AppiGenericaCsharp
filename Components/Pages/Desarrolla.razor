@@ -183,7 +183,8 @@
         }
         catch (Exception ex)
         {
-            mensaje = $"Error al cargar asignaciones: {ex.Message}";
+            registros = new List<Dictionary<string, object?>>();
+            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
             exito = false;
         }
         finally
