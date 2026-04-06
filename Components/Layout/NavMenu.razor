@@ -15,51 +15,103 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        @* Links a las 3 tablas sin clave foranea *@
+        @*======== SECCION 1: TABLAS SIN FK =========== *@
+        <div class="nav-header px-3 mt-2 text-uppercase small fw-bold text-white-50">Catálogos / Independientes</div>
+        
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="producto">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Producto
+            <NavLink class="nav-link" href="Proyecto">
+                <span class="bi bi-folder" aria-hidden="true"></span> Proyecto
             </NavLink>
         </div>
+        
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="tipo_producto">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Tipo Producto
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="docente_producto">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Docente Producto
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="proyecto">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Proyecto
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="ac_proyecto">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ac_proyecto
+            <NavLink class="nav-link" href="Tipo_producto">
+                <span class="bi bi-tag" aria-hidden="true"></span> Tipo Producto
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Termino_clave">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Termino Clave
+                <span class="bi bi-key" aria-hidden="true"></span> Termino Clave
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Desarrolla">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Desarrolla
+            <NavLink class="nav-link" href="Linea_investigacion">
+                <span class="bi bi-diagram-3" aria-hidden="true"></span> Línea Investigación
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Aliado_proyecto">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Aliado Proyecto
+            <NavLink class="nav-link" href="Area_conocimiento">
+                <span class="bi bi-book" aria-hidden="true"></span> Área Conocimiento
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Objetivo_desarrollo_sostenible">
+                <span class="bi bi-globe" aria-hidden="true"></span> ODS
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Area_aplicacion">
+                <span class="bi bi-briefcase" aria-hidden="true"></span> Área Aplicación
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Aliado">
+                <span class="bi bi-building" aria-hidden="true"></span> Aliado
+            </NavLink>
+        </div>
+
+        @*======== SECCION 2: TABLAS CON FK =========== *@
+        <div class="nav-header px-3 mt-3 text-uppercase small fw-bold text-white-50">Relaciones / Dependientes</div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Producto">
+                <span class="bi bi-box" aria-hidden="true"></span> Producto
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Docente">
+                <span class="bi bi-person-badge" aria-hidden="true"></span> Docente
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Ac_proyecto">
+                <span class="bi bi-link" aria-hidden="true"></span> Ac_proyecto
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Aa_proyecto">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Aa_proyecto
+                <span class="bi bi-link" aria-hidden="true"></span> Aa_proyecto
             </NavLink>
         </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Ods_proyecto">
+                <span class="bi bi-link" aria-hidden="true"></span> ODS_Proyecto
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Proyecto_linea">
+                <span class="bi bi-link" aria-hidden="true"></span> Proyecto_Línea
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Palabras_clave">
+                <span class="bi bi-hash" aria-hidden="true"></span> Palabras Clave
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Docente_producto">
+                <span class="bi bi-people" aria-hidden="true"></span> Docente_Producto
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Desarrolla">
+                <span class="bi bi-diagram-2" aria-hidden="true"></span> Desarrolla
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Aliado_proyecto">
+                <span class="bi bi-handshake" aria-hidden="true"></span> Aliado Proyecto
+            </NavLink>
+        </div>        
     </nav>
 </div>
