@@ -37,6 +37,11 @@
                         <small class="text-muted">Seleccione la gran área a la que pertenece el proyecto. Si va a ingresar otra gran área, use el formulario de creación.</small>
                     </div>
                     <div class="col-md-6 mb-3">
+                        <label class="form-label">Area</label>
+                        <input class="form-control" @bind="campoArea" />
+                        <small class="text-muted">Digite el nombre del área de conocimiento</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
                         <label class="form-label">Disciplina</label>
                         <input class="form-control" @bind="campoDisciplina" />
                         <small class="text-muted">Seleccione la disciplina a la que pertenece el proyecto. Si va a ingresar otra disciplina, use el formulario de creación.</small>
@@ -63,6 +68,7 @@
                 <tr>
                     <th>Id</th>
                     <th>Gran_area</th>
+                    <th>Area</th>
                     <th>Disciplina</th>                    
                 </tr>
             </thead>
@@ -72,6 +78,7 @@
                     <tr>
                         <td>@reg["id"]</td>
                         <td>@reg["gran_area"]</td>
+                        <td>@reg["area"]</td>
                         <td>@reg["disciplina"]</td>                        
                         <td>
                             <button class="btn btn-warning btn-sm me-1"
@@ -113,6 +120,7 @@
     // Campos del formulario
     private int campoId = 0;
     private string campoGranArea = string.Empty;
+    private string campoArea = string.Empty;
     private string campoDisciplina = string.Empty;
 
     // ───────── CICLO DE VIDA ─────────
@@ -152,6 +160,7 @@
         editando = false;
         campoId = 0;
         campoGranArea = string.Empty;
+        campoArea = string.Empty;
         campoDisciplina = string.Empty;
         mostrarFormulario = true;
         mensaje = string.Empty;
@@ -162,6 +171,7 @@
         editando = true;
         campoId = int.TryParse(reg["id"]?.ToString(), out int id) ? id : 0;
         campoGranArea = reg["gran_area"]?.ToString() ?? "";
+        campoArea = reg["area"]?.ToString() ?? "";
         campoDisciplina = reg["disciplina"]?.ToString() ?? "";
         mostrarFormulario = true;
         mensaje = string.Empty;
@@ -171,24 +181,22 @@
     {
         // Arma el diccionario con los datos del formulario
         var datos = new Dictionary<string, object?>
-        {
-            //["id"] = campoId, //
+        { 
             ["gran_area"] = campoGranArea,
+            ["area"] = campoArea,
             ["disciplina"] = campoDisciplina
         };
 
         if (editando)
         {
-            // PUT /api/proyecto/id/{valor}
-            // No incluimos el id en los datos porque es la clave
-            datos.Remove("id");
+            datos.Remove("id");        
             var resultado = await Api.ActualizarAsync("area_conocimiento", "id", campoId.ToString(), datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
         }
         else
         {
-            // POST /api/proyecto
+            
             var resultado = await Api.CrearAsync("area_conocimiento", datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
