@@ -20,7 +20,7 @@
     @* ───────── BOTON PARA MOSTRAR FORMULARIO DE CREAR ───────── *@
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Proyecto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Area de Conocimiento</button>
     }
     @* ───────── FORMULARIO (CREAR / EDITAR) ───────── *@
     @if (mostrarFormulario)
@@ -32,16 +32,14 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Id</label>
-                        <input class="form-control" type="number" @bind="campoId" disabled="@editando" />
-                    </div>
-                    <div class="col-md-6 mb-3">
                         <label class="form-label">Gran_area</label>
                         <input class="form-control" @bind="campoGranArea" />
+                        <small class="text-muted">Seleccione la gran área a la que pertenece el proyecto. Si va a ingresar otra gran área, use el formulario de creación.</small>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Disciplina</label>
                         <input class="form-control" @bind="campoDisciplina" />
+                        <small class="text-muted">Seleccione la disciplina a la que pertenece el proyecto. Si va a ingresar otra disciplina, use el formulario de creación.</small>
                     </div>                    
                 </div>
                 <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>

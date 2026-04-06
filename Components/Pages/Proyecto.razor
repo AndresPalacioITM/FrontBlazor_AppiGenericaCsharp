@@ -1,5 +1,4 @@
 @*Pagina proyecto de la primera entrega*@
-@*Daño*@
 @page "/Proyecto"
 @rendermode InteractiveServer
 @inject FrontBlazor_AppiGenericaCsharp.Services.ApiService Api
@@ -17,12 +16,14 @@
             <button type="button" class="btn-close" @onclick="() => mensaje = string.Empty"></button>
         </div>
     }
+
     @* ───────── BOTON PARA MOSTRAR FORMULARIO DE CREAR ───────── *@
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Proyecto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Proyecto</button>
     }
-    @* ───────── FORMULARIO (CREAR / EDITAR) ───────── *@
+
+    @* ───────── FORMULARIO (CREAR / EDITAR) - SIN CAMPO ID ───────── *@
     @if (mostrarFormulario)
     {
         <div class="card mb-3">
@@ -32,36 +33,49 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Id</label>
-                        <input class="form-control" type="number" @bind="campoId" disabled="@editando" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Titulo</label>
+                        <label class="form-label">Título</label>
                         <input class="form-control" @bind="campoTitulo" />
+                        <small class="text-muted">Ingrese el nombre del proyecto</small>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label class="form-label">Resumen</label>
-                        <input class="form-control" @bind="campoResumen" />
+                        <textarea class="form-control" rows="3" @bind="campoResumen"></textarea>
+                        <small class="text-muted">Ingrese el resumen del proyecto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Presupuesto</label>
+                        <label class="form-label">Presupuesto (COP)</label>
                         <input class="form-control" type="number" step="0.01" @bind="campoPresupuesto" />
+                        <small class="text-muted">Ingrese el valor en COP del proyecto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class ="form-label">Tipo_financiacion</label>
-                        <input class="form-control" @bind="campoTipoFinanciacion" />
+                        <label class="form-label">Tipo de financiación</label>
+                        <select class="form-select" @bind="campoTipoFinanciacion">
+                            <option value="">Seleccione...</option>
+                            <option value="Interna">Interna</option>
+                            <option value="Externa">Externa</option>
+                            <option value="Cofinanciado">Cofinanciado</option>
+                        </select>
+                        <small class="text-muted">Financiación fue interna, externa o cofinanciado</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class ="form-label">Tipo_fondos</label>
-                        <input class="form-control" @bind="campoTipoFondos" />
+                        <label class="form-label">Tipo de fondos</label>
+                        <select class="form-select" @bind="campoTipoFondos">
+                            <option value="">Seleccione...</option>
+                            <option value="Público">Público</option>
+                            <option value="Privado">Privado</option>
+                            <option value="Mixto">Mixto</option>
+                        </select>
+                        <small class="text-muted">Los fondos fueron de origen público, privado o mixto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class ="form-label">Fecha_inicio</label>
+                        <label class="form-label">Fecha de inicio</label>
                         <input class="form-control" type="date" @bind="campoFechaInicio" />
+                        <small class="text-muted">Seleccione la fecha de inicio</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class ="form-label">Fecha_fin</label>
+                        <label class="form-label">Fecha de fin</label>
                         <input class="form-control" type="date" @bind="campoFechaFin" />
+                        <small class="text-muted">Seleccione la fecha de finalización (activo)</small>
                     </div>
                 </div>
                 <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>
@@ -69,6 +83,7 @@
             </div>
         </div>
     }
+
     @if (cargando)
     {
         <div class="d-flex justify-content-center my-4">
@@ -77,6 +92,7 @@
             </div>
         </div>
     }
+
     @* ───────── TABLA DE REGISTROS ───────── *@
     @if (!cargando && registros.Any())
     {
@@ -84,13 +100,14 @@
             <thead class="table-dark">
                 <tr>
                     <th>Id</th>
-                    <th>Titulo</th>
+                    <th>Título</th>
                     <th>Resumen</th>
-                    <th>Presupuesto</th>
-                    <th>Tipo_financiacion</th>
-                    <th>Tipo_fondos</th>
-                    <th>Fecha_inicio</th>
-                    <th>Fecha_fin</th>
+                    <th>Presupuesto (COP) </th>
+                    <th>Tipo financiación</th>
+                    <th>Tipo fondos</th>
+                    <th>Fecha inicio</th>
+                    <th>Fecha fin</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -100,11 +117,11 @@
                         <td>@reg["id"]</td>
                         <td>@reg["titulo"]</td>
                         <td>@reg["resumen"]</td>
-                        <td>@reg["presupuesto"]</td>
+                        <td>@FormatearPresupuesto(reg["presupuesto"])</td>
                         <td>@reg["tipo_financiacion"]</td>
                         <td>@reg["tipo_fondos"]</td>
-                        <td>@reg["fecha_inicio"]</td>
-                        <td>@reg["fecha_fin"]</td>
+                        <td>@FormatearFecha(reg["fecha_inicio"])</td>
+                        <td>@FormatearFecha(reg["fecha_fin"])</td>                        
                         <td>
                             <button class="btn btn-warning btn-sm me-1"
                                     @onclick="() => EditarRegistro(reg)">
@@ -120,48 +137,41 @@
             </tbody>
         </table>
     }
-     @* ───────── MENSAJE CUANDO NO HAY DATOS ───────── *@
+
+    @* ───────── MENSAJE CUANDO NO HAY DATOS ───────── *@
     @if (!cargando && !registros.Any())
     {
         <div class="alert alert-warning">No se encontraron registros en la tabla proyecto.</div>
     }
 </div>
+
 @code 
 {
     // ───────── VARIABLES DE ESTADO ─────────
-
-    // Lista de registros obtenidos de la API
     private List<Dictionary<string, object?>> registros = new();
-    // Controla si se muestra el spinner de carga
     private bool cargando = true;
-    // Controla si se muestra el formulario
     private bool mostrarFormulario = false;
-    // Indica si estamos editando (true) o creando (false)
     private bool editando = false;
-    // Mensaje de alerta para el usuario
     private string mensaje = string.Empty;
-    // Indica si la ultima operacion fue exitosa (para color de alerta)
     private bool exito = false;
-    // Campos del formulario
-    private int campoId = 0;
+
+    // Campos del formulario (ID se maneja internamente sin mostrarse)
+    private int campoId = 0;          // solo para editar/eliminar
     private string campoTitulo = string.Empty;
     private string campoResumen = string.Empty;
     private double campoPresupuesto = 0;
     private string campoTipoFinanciacion = string.Empty;
     private string campoTipoFondos = string.Empty;
-    private DateTime campoFechaInicio = DateTime.MinValue;
-    private DateTime campoFechaFin = DateTime.MinValue;
+    private DateTime campoFechaInicio = DateTime.Today;
+    private DateTime campoFechaFin = DateTime.Today;
 
     // ───────── CICLO DE VIDA ─────────
-
-    // Se ejecuta al cargar la pagina por primera vez
     protected override async Task OnInitializedAsync()
     {
         await CargarRegistros();
     }
-     // ───────── METODOS ─────────
 
-    // Obtiene todos los registros de la tabla producto
+    // ───────── METODOS ─────────
     private async Task CargarRegistros()
     {
         cargando = true;
@@ -170,20 +180,19 @@
         {
             var resultado = await Api.ListarAsync("proyecto");
             registros = resultado ?? new List<Dictionary<string, object?>>();
-             // Si la respuesta es nula, inicializa con lista vacia
         }
         catch (Exception ex)
         {
             registros = new List<Dictionary<string, object?>>();
             mensaje = $"Error al cargar los datos: {ex.Message}";
-                exito = false;
+            exito = false;
         }
         finally
         {
             cargando = false;
-        }        
+        }
     }
-     // Muestra el formulario vacio para crear un nuevo registro
+
     private void NuevoRegistro()
     {
         editando = false;
@@ -193,12 +202,12 @@
         campoPresupuesto = 0;
         campoTipoFinanciacion = string.Empty;
         campoTipoFondos = string.Empty;
-        campoFechaInicio = DateTime.MinValue;
-        campoFechaFin = DateTime.MinValue;
+        campoFechaInicio = DateTime.Today;
+        campoFechaFin = DateTime.Today;
         mostrarFormulario = true;
         mensaje = string.Empty;
     }
-    // Llena el formulario con los datos del registro seleccionado
+
     private void EditarRegistro(Dictionary<string, object?> reg)
     {
         editando = true;
@@ -208,18 +217,16 @@
         campoPresupuesto = double.TryParse(reg["presupuesto"]?.ToString(), out double p) ? p : 0;
         campoTipoFinanciacion = reg["tipo_financiacion"]?.ToString() ?? "";
         campoTipoFondos = reg["tipo_fondos"]?.ToString() ?? "";
-        campoFechaInicio = DateTime.TryParse(reg["fecha_inicio"]?.ToString(), out DateTime fInicio) ? fInicio : DateTime.MinValue;
-        campoFechaFin = DateTime.TryParse(reg["fecha_fin"]?.ToString(), out DateTime fFin) ? fFin : DateTime.MinValue;
+        campoFechaInicio = DateTime.TryParse(reg["fecha_inicio"]?.ToString(), out DateTime fInicio) ? fInicio : DateTime.Today;
+        campoFechaFin = DateTime.TryParse(reg["fecha_fin"]?.ToString(), out DateTime fFin) ? fFin : DateTime.Today;
         mostrarFormulario = true;
         mensaje = string.Empty;
     }
-     // Crea o actualiza un registro segun el modo (editando o creando)
+
     private async Task GuardarRegistro()
     {
-        // Arma el diccionario con los datos del formulario
         var datos = new Dictionary<string, object?>
         {
-            //["id"] = campoId, //
             ["titulo"] = campoTitulo,
             ["resumen"] = campoResumen,
             ["presupuesto"] = campoPresupuesto,
@@ -231,16 +238,12 @@
 
         if (editando)
         {
-            // PUT /api/proyecto/id/{valor}
-            // No incluimos el id en los datos porque es la clave
-            datos.Remove("id");
             var resultado = await Api.ActualizarAsync("proyecto", "id", campoId.ToString(), datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
         }
         else
         {
-            // POST /api/proyecto
             var resultado = await Api.CrearAsync("proyecto", datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
@@ -249,30 +252,44 @@
         if (exito)
         {
             mostrarFormulario = false;
-            await CargarRegistros(); // Recargar la tabla
+            await CargarRegistros();
         }
     }
-     // Elimina un registro despues de confirmacion
+
     private async Task EliminarRegistro(Dictionary<string, object?> reg)
     {
         string id = reg["id"]?.ToString() ?? "";
+        if (string.IsNullOrEmpty(id)) return;
 
-        // DELETE /api/proyecto/id/{valor}
         var resultado = await Api.EliminarAsync("proyecto", "id", id);
         exito = resultado.exito;
         mensaje = resultado.mensaje;
 
         if (exito)
         {
-            await CargarRegistros(); // Recargar la tabla
+            await CargarRegistros();
         }
     }
 
-    // Oculta el formulario sin guardar
     private void Cancelar()
     {
         mostrarFormulario = false;
         mensaje = string.Empty;
     }
-}
 
+    private string FormatearFecha(object? fechaObj)
+    {
+        if (fechaObj == null) return "";
+        if(fechaObj is DateTime dt) return dt.ToString("yyyy-MM-dd");
+        if(fechaObj is string str && DateTime.TryParse(str, out DateTime dt2)) return dt2.ToString("yyyy-MM-dd");
+        return "";
+    }
+
+    private string FormatearPresupuesto(object? valor)
+{
+    if (valor == null) return "$0";
+    double numero = Convert.ToDouble(valor);
+    // Formato con separadores de miles y sin decimales
+    return $"${numero.ToString("#,0").Replace(",", ".")}";
+}
+}

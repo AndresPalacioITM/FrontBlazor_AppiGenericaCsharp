@@ -20,7 +20,7 @@
     @* ───────── BOTON PARA MOSTRAR FORMULARIO DE CREAR ───────── *@
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Proyecto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nueva Línea de Investigación</button>
     }
     @* ───────── FORMULARIO (CREAR / EDITAR) ───────── *@
     @if (mostrarFormulario)
@@ -32,16 +32,14 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Id</label>
-                        <input class="form-control" type="number" @bind="campoId" disabled="@editando" />
-                    </div>
-                    <div class="col-md-6 mb-3">
                         <label class="form-label">Nombre</label>
                         <input class="form-control" @bind="campoNombre" />
+                        <small class="text-muted">Ingrese el nombre de la línea de investigación.</small>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Descripcion</label>
                         <input class="form-control" @bind="campoDescripcion" />
+                        <small class="text-muted">Ingrese la descripción de la línea de investigación.</small>
                     </div>                    
                 </div>
                 <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>

@@ -3,8 +3,10 @@
 @inject FrontBlazor_AppiGenericaCsharp.Services.ApiService Api
 
 <PageTitle>Producto</PageTitle>
-<div class ="container mt-4">
-    <h3>Producto</h3>
+<div class="container mt-4">
+    <h3>Productos</h3>
+
+    @* Alertas *@
     @if (!string.IsNullOrEmpty(mensaje))
     {
         <div class="alert @(exito ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
@@ -12,48 +14,76 @@
             <button type="button" class="btn-close" @onclick="() => mensaje = string.Empty"></button>
         </div>
     }
+
+    @* Botón nuevo *@
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Producto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Producto</button>
     }
+
+    @* FORMULARIO (sin campo Id) *@
     @if (mostrarFormulario)
     {
         <div class="card mb-3">
             <div class="card-header">
                 @(editando ? "Editar Producto" : "Nuevo Producto")
             </div>
-            <div class="car-body">
+            <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Id</label>
-                        <input class="form-control" type="number" @bind="campoId" disabled="@editando"/>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Nombre del producto</label>
+                        <input class="form-control" @bind="campoNombre" placeholder="Ej. Patente de invención, artículo, software..." />
+                        <small class="text-muted">Ingrese el nombre del producto (título, patente, otro)</small>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Nombre</label>
-                        <input class="form-control" @bind="campoNombre"/>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Categoría</label>
+                        <input class="form-control" @bind="campoCategoria" />
+                        <small class="text-muted">Categoría del producto (opcional)</small>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Categoria</label>
-                        <input class="form-control" @bind="campoCategoria"/>
-                    </div>                    
-                    <div class="col-md-6">
-                        <label class="form-label">Fecha_entrega</label>
-                        <input class="form-control" type="date" @bind="campoFechaEntrega"/>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Tipo de producto (MinCiencias)</label>
+                        <select class="form-select" @bind="campoTipoProducto">
+                            <option value="0">-- Seleccione un tipo --</option>
+                            @foreach (var tp in listaTiposProducto)
+                            {
+                                var idTipo = Convert.ToInt32(tp["id"]);
+                                var nombreTipo = tp["nombre"]?.ToString() ?? $"Tipo {idTipo}";
+                                <option value="@idTipo">@nombreTipo</option>
+                            }
+                        </select>
+                        <small class="text-muted">Seleccione el tipo de producto de acuerdo al modelo MinCiencias (que se vincule con categoría, clase, tipología)</small>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Proyecto</label>
-                        <input class="form-control" type="number" @bind="campoProyecto"/>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Fecha de entrega / publicación</label>
+                        <input class="form-control" type="date" @bind="campoFechaEntrega" />
+                        <small class="text-muted">Seleccione la fecha de publicación</small>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Tipo_Producto</label>
-                        <input class="form-control" type="number" @bind="campoTipoProducto"/>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Proyecto asociado</label>
+                        <select class="form-select" @bind="campoProyecto">
+                            <option value="0">-- Seleccione un proyecto --</option>
+                            @foreach (var proy in listaProyectos)
+                            {
+                                var idProy = Convert.ToInt32(proy["id"]);
+                                var titulo = proy["titulo"]?.ToString();
+                                <option value="@idProy">@idProy - @titulo</option>
+                            }
+                        </select>
+                        <small class="text-muted">Proyecto al que pertenece este producto</small>
                     </div>
                 </div>
-                <button class="btn btn-success" @onclick="GuardarRegistro">Guardar</button>
+
+                <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>
                 <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
             </div>
         </div>
     }
+
+    @* Spinner *@
     @if (cargando)
     {
         <div class="d-flex justify-content-center my-4">
@@ -62,17 +92,20 @@
             </div>
         </div>
     }
-    @if(!cargando && registros.Any())
+
+    @* TABLA DE PRODUCTOS *@
+    @if (!cargando && registros.Any())
     {
         <table class="table table-striped table-hover">
             <thead class="table-dark">
                 <tr>
                     <th>Id</th>
                     <th>Nombre</th>
-                    <th>Categoria</th>
-                    <th>Fecha_entrega</th>
-                    <th>Proyecto</th>
-                    <th>Tipo_Producto</th>
+                    <th>Categoría</th>
+                    <th>Fecha entrega</th>
+                    <th>Proyecto ID</th>
+                    <th>Tipo producto ID</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,7 +115,7 @@
                         <td>@reg["id"]</td>
                         <td>@reg["nombre"]</td>
                         <td>@reg["categoria"]</td>
-                        <td>@reg["fecha_entrega"]</td>
+                        <td>@FormatearFecha(reg["fecha_entrega"])</td>
                         <td>@reg["proyecto"]</td>
                         <td>@reg["tipo_producto"]</td>
                         <td>
@@ -91,34 +124,54 @@
                         </td>
                     </tr>
                 }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
     }
+
     @if (!cargando && !registros.Any())
     {
-        <div class="alert alert-warning">No se encontraron registros en la tabla Producto. Haz clic en "Nuevo Proyecto" para agregar uno.</div>      
+        <div class="alert alert-warning">No se encontraron productos. Haga clic en "Nuevo Producto" para agregar uno.</div>
     }
 </div>
-@code
-{
+
+@code {
     private List<Dictionary<string, object?>> registros = new();
+    private List<Dictionary<string, object?>> listaTiposProducto = new();
+    private List<Dictionary<string, object?>> listaProyectos = new();
     private bool cargando = true;
     private bool mostrarFormulario = false;
     private bool editando = false;
     private string mensaje = string.Empty;
     private bool exito = false;
 
-    // Campos del formulario
-    private int campoId = 0;
+    // Campos del formulario (sin Id, porque es autogenerado)
+    private int campoId = 0;          // solo para editar/eliminar, no se muestra
     private string campoNombre = string.Empty;
     private string campoCategoria = string.Empty;
     private DateTime campoFechaEntrega = DateTime.Today;
-    private int campoProyecto = 0; 
-    private int campoTipoProducto = 0; 
+    private int campoProyecto = 0;
+    private int campoTipoProducto = 0;
 
     protected override async Task OnInitializedAsync()
     {
+        await CargarCatalogos();
         await CargarRegistros();
+    }
+
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var tipos = await Api.ListarAsync("tipo_producto");
+            listaTiposProducto = tipos ?? new();
+            var proyectos = await Api.ListarAsync("proyecto");
+            listaProyectos = proyectos ?? new();
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error al cargar catálogos: {ex.Message}";
+            exito = false;
+        }
     }
 
     private async Task CargarRegistros()
@@ -127,22 +180,21 @@
         mensaje = string.Empty;
         try
         {
-            
             var resultado = await Api.ListarAsync("producto");
-            registros = resultado ?? new List<Dictionary<string, object?>>();
-                // si la API devuelve null, se asigna una lista vacía para evitar errores
+            registros = resultado ?? new();
         }
         catch (Exception ex)
         {
-            registros = new List<Dictionary<string, object?>>();
+            registros = new();
             mensaje = $"Error al cargar datos: {ex.Message}";
-                exito = false;
+            exito = false;
         }
         finally
         {
             cargando = false;
         }
     }
+
     private void NuevoRegistro()
     {
         editando = false;
@@ -152,21 +204,23 @@
         campoFechaEntrega = DateTime.Today;
         campoProyecto = 0;
         campoTipoProducto = 0;
-        mostrarFormulario = true; 
+        mostrarFormulario = true;
         mensaje = string.Empty;
     }
+
     private void EditarRegistro(Dictionary<string, object?> reg)
-        {
-            editando = true;
-            campoId = int.TryParse(reg["id"]?.ToString(), out int id) ? id : 0;
-            campoNombre = reg["nombre"]?.ToString() ?? string.Empty;
-            campoCategoria = reg["categoria"]?.ToString() ?? string.Empty;
-            campoFechaEntrega = DateTime.TryParse(reg["fecha_entrega"]?.ToString(), out var fecha) ? fecha : DateTime.Today;
-            campoProyecto = int.TryParse(reg["proyecto"]?.ToString(), out int proyecto) ? proyecto : 0;
-            campoTipoProducto = int.TryParse(reg["tipo_producto"]?.ToString(), out int tipoProducto) ? tipoProducto : 0;
-            mostrarFormulario = true;
-            mensaje = string.Empty;
-        }
+    {
+        editando = true;
+        campoId = Convert.ToInt32(reg["id"]);
+        campoNombre = reg["nombre"]?.ToString() ?? "";
+        campoCategoria = reg["categoria"]?.ToString() ?? "";
+        campoFechaEntrega = reg["fecha_entrega"] is DateTime dt ? dt : DateTime.Today;
+        campoProyecto = Convert.ToInt32(reg["proyecto"]);
+        campoTipoProducto = Convert.ToInt32(reg["tipo_producto"]);
+        mostrarFormulario = true;
+        mensaje = string.Empty;
+    }
+
     private async Task GuardarRegistro()
     {
         var datos = new Dictionary<string, object?>
@@ -177,42 +231,47 @@
             ["proyecto"] = campoProyecto,
             ["tipo_producto"] = campoTipoProducto
         };
+
         if (editando)
         {
-            //PUT /api/Producto/id/{valor}
-            // No incluimos el id en los datos porque es la clave
-            datos.Remove("id");
             var resultado = await Api.ActualizarAsync("producto", "id", campoId.ToString(), datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
         }
         else
         {
-            //POST /api/Producto
             var resultado = await Api.CrearAsync("producto", datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
         }
+
         if (exito)
         {
-            await CargarRegistros(); //recargar la lista para mostrar los cambios
+            await CargarRegistros();
             mostrarFormulario = false;
         }
     }
+
     private async Task EliminarRegistro(Dictionary<string, object?> reg)
-        {
-            string id = reg["id"]?.ToString() ?? "";
-            var resultado = await Api.EliminarAsync("producto", "id",id);
-            exito = resultado.exito;
-            mensaje = resultado.mensaje;
-            if (exito)
-            {
-                await CargarRegistros(); //recargar la lista para mostrar los cambios
-            }
+    {
+        string id = reg["id"]?.ToString() ?? "";
+        var resultado = await Api.EliminarAsync("producto", "id", id);
+        exito = resultado.exito;
+        mensaje = resultado.mensaje;
+        if (exito) await CargarRegistros();
     }
+
     private void Cancelar()
     {
         mostrarFormulario = false;
-        mensaje = string.Empty; 
+        mensaje = string.Empty;
+    }
+
+    private string FormatearFecha(object? fechaObj)
+    {
+        if (fechaObj == null) return "";
+        if (fechaObj is DateTime dt) return dt.ToString("yyyy-MM-dd");
+        if (fechaObj is string str && DateTime.TryParse(str, out DateTime dt2)) return dt2.ToString("yyyy-MM-dd");
+        return "";
     }
 }

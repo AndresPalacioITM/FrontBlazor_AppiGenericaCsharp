@@ -1,5 +1,3 @@
-@*Pagina proyecto de la primera entrega*@
-@*Daño*@
 @page "/Aliado"
 @rendermode InteractiveServer
 @inject FrontBlazor_AppiGenericaCsharp.Services.ApiService Api
@@ -20,7 +18,7 @@
     @* ───────── BOTON PARA MOSTRAR FORMULARIO DE CREAR ───────── *@
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Proyecto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Aliado</button>
     }
     @* ───────── FORMULARIO (CREAR / EDITAR) ───────── *@
     @if (mostrarFormulario)
@@ -34,26 +32,32 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Nit</label>
                         <input class="form-control" type="number" @bind="campoNit" disabled="@editando" />
+                        <small class="text-muted">Ingrese el número de identificación tributaria (NIT)</small>                        
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Razon_social</label>
                         <input class="form-control" @bind="campoRazonSocial" />
+                        <small class="text-muted">Ingrese el nombre de la institución aliada con la que realizó el proyecto</small>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Nombre_contacto</label>
                         <input class="form-control" @bind="campoNombreContacto" />
+                        <small class="text-muted">Ingrese el nombre del contacto</small>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Correo</label>
                         <input class="form-control" type="email" @bind="campoCorreo" />
+                        <small class="text-muted">Ingrese el correo electrónico del contacto</small>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class ="form-label">Telefono</label>
                         <input class="form-control" @bind="campoTelefono" />
+                        <small class="text-muted">Ingrese el número de teléfono del contacto</small>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class ="form-label">Ciudad</label>
                         <input class="form-control" @bind="campoCiudad" />
+                        <small class="text-muted">Ingrese la ciudad del contacto</small>
                     </div>                    
                 </div>
                 <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>
@@ -222,8 +226,8 @@
 
         if (editando)
         {
-            // PUT /api/proyecto/id/{valor}
-            // No incluimos el id en los datos porque es la clave
+            // PUT /api/aliado/nit/{valor}
+            
             datos.Remove("nit");
             var resultado = await Api.ActualizarAsync("aliado", "nit", campoNit.ToString(), datos);
             exito = resultado.exito;
@@ -246,10 +250,10 @@
      // Elimina un registro despues de confirmacion
     private async Task EliminarRegistro(Dictionary<string, object?> reg)
     {
-        string id = reg["nit"]?.ToString() ?? "";
+        string nit = reg["nit"]?.ToString() ?? "";
 
         // DELETE /api/aliado/nit/{valor}
-        var resultado = await Api.EliminarAsync("aliado", "nit", id); 
+        var resultado = await Api.EliminarAsync("aliado", "nit", nit); 
         exito = resultado.exito;
         mensaje = resultado.mensaje;
 
