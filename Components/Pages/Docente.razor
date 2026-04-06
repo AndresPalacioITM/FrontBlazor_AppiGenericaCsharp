@@ -38,7 +38,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Cedula</label>
-                        <input class="form-control" @bind="campoCedula" />
+                        <input class="form-control" type="number" @bind="campoCedula" />
                         <small class="text-muted">Ingrese su número de Identificación </small>
                     </div>
                     <div class="col-md-12 mb-3">
@@ -138,7 +138,7 @@
                             <option value="0">-- Seleccione una Linea de investigacion --</option>
                             @foreach (var linea in listaLineasInvestigacion)
                             {
-                                var idLinea = linea["id"]?.ToString() ?? string.Empty;
+                                var idLinea = Convert.ToInt32(linea["id"]);
                                 var nombreLinea = linea["nombre"]?.ToString() ?? $"Linea {idLinea}";
                                 <option value="@idLinea">@nombreLinea</option>
                             }
@@ -202,10 +202,10 @@
                         <td>@FormatearFecha(reg["fecha_actualizacion"])</td>
                         <td>@reg["escalafon"]</td>
                         <td>@reg["perfil"]</td>
-                        <td>@reg["categoria_minciencia"]</td>
-                        <td>@reg["convocatoria_minciencia"]</td>
+                        <td>@reg["cat_minciencia"]</td>
+                        <td>@reg["conv_minciencia"]</td>
                         <td>@reg["nacionalidad"]</td>
-                        <td>@reg["linea_investigacion"]</td>
+                        <td>@reg["linea_investigacion_principal"]</td>
                         <td>
                             <button class="btn btn-warning btn-sm me-1"
                                     @onclick="() => EditarRegistro(reg)">
@@ -241,7 +241,7 @@
     private bool exito = false;
 
     // Campos del formulario (ID se maneja internamente sin mostrarse)
-    private string campoCedula = string.Empty;
+    private int campoCedula = 0;
     private string campoNombres = string.Empty;
     private string campoApellidos = string.Empty;
     private string campoGenero = string.Empty;
@@ -261,16 +261,16 @@
     // ───────── CICLO DE VIDA ─────────
     protected override async Task OnInitializedAsync()
     {
-        await CargarRegistros();
         await CargarCatalogos();
+        await CargarRegistros();
     }
 
     private async Task CargarCatalogos()
     {
         try
         {
-            var lineasInvestigacion = await Api.ListarAsync("linea_investigacion");
-            listaLineasInvestigacion = lineasInvestigacion ?? new ();
+            var lineasInvestigacion = await Api.ListarAsync("linea_investigacion"); //
+            listaLineasInvestigacion = lineasInvestigacion ?? new ();            
             
         }
         catch (Exception ex)
@@ -288,11 +288,11 @@
         try
         {
             var resultado = await Api.ListarAsync("docente");
-            registros = resultado ?? new List<Dictionary<string, object?>>();
+            registros = resultado ?? new ();
         }
         catch (Exception ex)
         {
-            registros = new List<Dictionary<string, object?>>();
+            registros = new ();
             mensaje = $"Error al cargar los datos: {ex.Message}";
             exito = false;
         }
@@ -305,7 +305,7 @@
     private void NuevoRegistro()
     {
         editando = false;
-        campoCedula = string.Empty;
+        campoCedula = 0;
         campoNombres = string.Empty;
         campoApellidos = string.Empty;
         campoGenero = string.Empty;
@@ -328,7 +328,7 @@
     private void EditarRegistro(Dictionary<string, object?> reg)
     {
         editando = true;
-        campoCedula = reg["cedula"]?.ToString() ?? string.Empty;
+        campoCedula =  Convert.ToInt32(reg["cedula"]);
         campoNombres = reg["nombres"]?.ToString() ?? string.Empty;
         campoApellidos = reg["apellidos"]?.ToString() ?? string.Empty;
         campoGenero = reg["genero"]?.ToString() ?? string.Empty;
@@ -337,18 +337,37 @@
         campoCorreo = reg["correo"]?.ToString() ?? string.Empty;
         campoTelefono = reg["telefono"]?.ToString() ?? string.Empty;
         campoUrlCvlac = reg["url_cvlac"]?.ToString() ?? string.Empty;
-        campoFechaActualizacion = DateTime.Today;
         campoEscalafon = reg["escalafon"]?.ToString() ?? string.Empty;
         campoPerfil = reg["perfil"]?.ToString() ?? string.Empty;
-        campoCatMinciencia = reg["categoria_minciencia"]?.ToString() ?? string.Empty;
-        campoConvMinciencia = reg["convocatoria_minciencia"]?.ToString() ?? string.Empty;
+        campoCatMinciencia = reg["cat_minciencia"]?.ToString() ?? string.Empty;
+        campoConvMinciencia = reg["conv_minciencia"]?.ToString() ?? string.Empty;
         campoNacionalidad = reg["nacionalidad"]?.ToString() ?? string.Empty;
-        campoLineaInvestigacion = int.TryParse(reg["linea_investigacion"]?.ToString(), out int linea) ? linea : 0;
+        campoLineaInvestigacion = Convert.ToInt32(reg["linea_investigacion_principal"]);
+        mostrarFormulario = true;
         mensaje = string.Empty;
     }
 
     private async Task GuardarRegistro()
     {
+        // Validaciones
+        if (campoCedula <= 0) { mensaje = "La cédula es obligatoria y debe ser mayor a cero."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoNombres)) { mensaje = "El nombre es obligatorio."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoApellidos)) { mensaje = "El apellido es obligatorio."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoGenero)) { mensaje = "El género es obligatorio."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoCargo)) { mensaje = "El cargo es obligatorio."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoCorreo)) { mensaje = "El correo es obligatorio."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoTelefono)) { mensaje = "El teléfono es obligatorio."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoUrlCvlac)) { mensaje = "La URL del CVLAC es obligatoria."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoEscalafon)) { mensaje = "El escalafón es obligatorio."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoPerfil)) { mensaje = "El perfil es obligatorio."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoConvMinciencia)) { mensaje = "La convocatoria MinCiencias es obligatoria."; exito = false; return; }
+        if (string.IsNullOrWhiteSpace(campoNacionalidad)) { mensaje = "La nacionalidad es obligatoria."; exito = false; return; }
+        if (campoLineaInvestigacion <= 0) { mensaje = "Debe seleccionar una línea de investigación principal válida."; exito = false; return; }
+
+        // validaciones de fecha 
+        if (campoFechaNacimiento  > DateTime.Today){ mensaje = "La fecha de nacimiento no puede ser futura."; exito = false; return;}
+        if (campoFechaNacimiento < DateTime.Today.AddYears(-120)){mensaje = "La fecha de nacimiento parece demasiado antigua (mas de 120 años)."; exito = false; return; }
+        
         var datos = new Dictionary<string, object?>
         {
             ["cedula"] = campoCedula,
@@ -360,13 +379,13 @@
             ["correo"] = campoCorreo,
             ["telefono"] = campoTelefono,
             ["url_cvlac"] = campoUrlCvlac,
-            ["fecha_actualizacion"] = DateTime.Today.ToString("yyyy-MM-dd"),
+            ["fecha_actualizacion"] = DateTime.Now.ToString("yyyy-MM-dd"),
             ["escalafon"] = campoEscalafon,
             ["perfil"] = campoPerfil,
-            ["categoria_minciencia"] = campoCatMinciencia,
-            ["convocatoria_minciencia"] = campoConvMinciencia,
-            ["nacionalidad"] = campoNacionalidad,
-            ["linea_investigacion"] = campoLineaInvestigacion
+            ["cat_minciencia"] = campoCatMinciencia,       
+            ["conv_minciencia"] = campoConvMinciencia,      
+            ["nacionalidad"] = campoNacionalidad,          
+            ["linea_investigacion_principal"] = campoLineaInvestigacion
         };
 
         if (editando)
@@ -384,24 +403,18 @@
 
         if (exito)
         {
-            mostrarFormulario = false;
             await CargarRegistros();
+            mostrarFormulario = false;
         }
     }
 
     private async Task EliminarRegistro(Dictionary<string, object?> reg)
     {
         string cedula = reg["cedula"]?.ToString() ?? "";
-        if (string.IsNullOrEmpty(cedula)) return;
-
         var resultado = await Api.EliminarAsync("docente", "cedula", cedula);
         exito = resultado.exito;
         mensaje = resultado.mensaje;
-
-        if (exito)
-        {
-            await CargarRegistros();
-        }
+        if (exito) await CargarRegistros();
     }
 
     private void Cancelar()
@@ -417,12 +430,4 @@
         if(fechaObj is string str && DateTime.TryParse(str, out DateTime dt2)) return dt2.ToString("yyyy-MM-dd");
         return "";
     }
-
-    private string FormatearPresupuesto(object? valor)
-{
-    if (valor == null) return "$0";
-    double numero = Convert.ToDouble(valor);
-    // Formato con separadores de miles y sin decimales
-    return $"${numero.ToString("#,0").Replace(",", ".")}";
-}
 }

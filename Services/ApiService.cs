@@ -46,7 +46,12 @@ namespace FrontBlazor_AppiGenericaCsharp.Services
                 string mensaje = contenido.TryGetProperty("mensaje", out JsonElement msg)
                     ? msg.GetString() ?? "Operacion completada."
                     : "Operacion completada.";
-
+                if (!respuesta.IsSuccessStatusCode)
+                {
+                    var errorContent = await respuesta.Content.ReadAsStringAsync();
+                    Console.WriteLine($"ERROR API ({respuesta.StatusCode}): {errorContent}");
+                    return (false, $"Error {respuesta.StatusCode}: {errorContent}");
+                }
                 return (respuesta.IsSuccessStatusCode, mensaje);
             }
             catch (HttpRequestException ex)

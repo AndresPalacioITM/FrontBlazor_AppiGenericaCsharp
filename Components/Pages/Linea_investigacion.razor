@@ -171,22 +171,10 @@
     {
         // Arma el diccionario con los datos del formulario
         var datos = new Dictionary<string, object?>
-        {
-            // el 
+        { 
             ["nombre"] = campoNombre,
             ["descripcion"] = campoDescripcion
         };
-
-        if (editando)
-        {
-            // PUT /api/proyecto/id/{valor}
-            // No incluimos el id en los datos porque es la clave
-            datos.Remove("id");
-            var resultado = await Api.ActualizarAsync("linea_investigacion", "id", campoId.ToString(), datos);
-            exito = resultado.exito;
-            mensaje = resultado.mensaje;
-        };
-
         if (editando)
         {
             // PUT /api/proyecto/id/{valor}
@@ -214,7 +202,6 @@
     private async Task EliminarRegistro(Dictionary<string, object?> reg)
     {
         string id = reg["id"]?.ToString() ?? "";
-
         // DELETE /api/proyecto/id/{valor}
         var resultado = await Api.EliminarAsync("linea_investigacion", "id", id);
         exito = resultado.exito;

@@ -18,7 +18,7 @@
     @* ───────── BOTON PARA MOSTRAR FORMULARIO DE CREAR ───────── *@
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Tipo_producto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Tipo producto</button>
     }
     @* ───────── FORMULARIO (CREAR / EDITAR) ───────── *@
     @if (mostrarFormulario)
@@ -45,9 +45,9 @@
                         <small class="text-muted">Ingrese el nombre del producto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class ="form-label">Topologia</label>
-                        <input class="form-control" @bind="campoTopologia" />
-                        <small class="text-muted">Ingrese la topología del producto</small>
+                        <label class ="form-label">Tipologia</label>
+                        <input class="form-control" @bind="campoTipologia" />
+                        <small class="text-muted">Ingrese la tipología del producto</small>
                     </div>                    
                 </div>
                 <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>
@@ -73,7 +73,7 @@
                     <th>Categoria</th>
                     <th>Clase</th>
                     <th>Nombre</th>
-                    <th>Topologia</th>                    
+                    <th>Tipologia</th>                    
                 </tr>
             </thead>
             <tbody>
@@ -84,7 +84,7 @@
                         <td>@reg["categoria"]</td>
                         <td>@reg["clase"]</td>
                         <td>@reg["nombre"]</td>
-                        <td>@reg["topologia"]</td>
+                        <td>@reg["tipologia"]</td>
                         <td>
                             <button class="btn btn-warning btn-sm me-1"
                                     @onclick="() => EditarRegistro(reg)">
@@ -127,7 +127,7 @@
     private string campoCategoria = string.Empty;
     private string campoClase = string.Empty;
     private string campoNombre = string.Empty;
-    private string campoTopologia = string.Empty;
+    private string campoTipologia = string.Empty;
 
     // ───────── CICLO DE VIDA ─────────
 
@@ -168,7 +168,7 @@
         campoCategoria = string.Empty;
         campoClase = string.Empty;
         campoNombre = string.Empty;
-        campoTopologia = string.Empty;        
+        campoTipologia = string.Empty;        
         mostrarFormulario = true;
         mensaje = string.Empty;
     }
@@ -180,7 +180,7 @@
         campoCategoria = reg["categoria"]?.ToString() ?? "";
         campoClase = reg["clase"]?.ToString() ?? "";
         campoNombre = reg["nombre"]?.ToString() ?? "";
-        campoTopologia = reg["topologia"]?.ToString() ?? "";
+        campoTipologia = reg["tipologia"]?.ToString() ?? "";
         mostrarFormulario = true;
         mensaje = string.Empty;
     }
@@ -194,7 +194,7 @@
             ["categoria"] = campoCategoria,
             ["clase"] = campoClase,
             ["nombre"] = campoNombre,
-            ["topologia"] = campoTopologia,
+            ["tipologia"] = campoTipologia,
         };
 
         if (editando)
