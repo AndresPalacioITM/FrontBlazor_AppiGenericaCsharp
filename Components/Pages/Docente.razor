@@ -1,0 +1,428 @@
+@*Pagina proyecto de la primera entrega*@
+@page "/Docente"
+@rendermode InteractiveServer
+@inject FrontBlazor_AppiGenericaCsharp.Services.ApiService Api
+
+<PageTitle>Docente</PageTitle>
+
+<div class="container mt-4">
+    <h3>Docente</h3>
+
+    @* ───────── ALERTA DE EXITO O ERROR ───────── *@
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+        <div class="alert @(exito ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+            @mensaje
+            <button type="button" class="btn-close" @onclick="() => mensaje = string.Empty"></button>
+        </div>
+    }
+
+    @* ───────── BOTON PARA MOSTRAR FORMULARIO DE CREAR ───────── *@
+    @if (!mostrarFormulario)
+    {
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Docente</button>
+    }
+    <div class="alert alert-info mt-3" role="alert">
+        <strong>Estimado Docente</strong><br />
+        Por favor, verifique que esté registrado en la base de datos de gestión profesoral. 
+        Si no aparece, por favor registre su información.
+    </div>
+    @* ───────── FORMULARIO (CREAR / EDITAR) - SIN CAMPO ID ───────── *@
+    @if (mostrarFormulario)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                @(editando ? "Editar Docente" : "Nuevo Docente")
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Cedula</label>
+                        <input class="form-control" @bind="campoCedula" />
+                        <small class="text-muted">Ingrese su número de Identificación </small>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Nombres</label>
+                        <input class="form-control" @bind="campoNombres" />
+                        <small class="text-muted">Ingrese sus nombre(s) </small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Apellidos</label>
+                        <input class="form-control" @bind="campoApellidos" />
+                        <small class="text-muted">Ingrese sus apellidos</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Genero</label>
+                        <select class="form-select" @bind="campoGenero">
+                            <option value="">Seleccione...</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <small class="text-muted">Seleccione su genero de acuerdo a su documento de identidad</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Cargo</label>
+                        <select class="form-select" @bind="campoCargo">
+                            <option value="">Seleccione...</option>
+                            <option value="Público">Docente</option>
+                            <option value="Privado">Administrativo</option>
+                        </select>
+                        <small class="text-muted">Seleccione su cargo (docente o administrativo)</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Fecha de nacimiento</label>
+                        <input class="form-control" type="date" @bind="campoFechaNacimiento" />
+                        <small class="text-muted">Seleccione su fecha de nacimiento</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Correo</label>
+                        <input class="form-control" @bind="campoCorreo" />
+                        <small class="text-muted">Coloque su correo electrónico institucional</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Telefono</label>
+                        <input class="form-control" @bind="campoTelefono" />
+                        <small class="text-muted">Ingrese su numero de contacto</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">url_cvlac</label>
+                        <input class="form-control" @bind="campoUrlCvlac" />
+                        <small class="text-muted">Copie la dirección de su hoja de vida en el Ministerio de Ciencia, Tecnología e Innovación (CvLac)</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Escalafon</label>
+                        <select class="form-select" @bind="campoEscalafon">
+                            <option value="">Seleccione...</option>
+                            <option value="Auxiliar">Auxiliar</option>
+                            <option value="Asistente">Asistente</option>
+                            <option value="Asociado">Asociado</option>
+                            <option value="Titular">Titular</option>
+                        </select>
+                        <small class="text-muted">Seleccione el escalafon al que pertenece (auxiliar, asistente, asociado, titular)</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Perfil</label>
+                        <textarea class="form-control" rows="3" @bind="campoPerfil"></textarea>
+                        <small class="text-muted">Ingrese una breve descripción de su perfil profesional</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Categoria minciencia</label>
+                        <select class="form-select" @bind="campoCatMinciencia">
+                            <option value="">Seleccione...</option>
+                            <option value="A1">A1</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="Reconocidos">Reconocidos</option>
+                        </select>
+                        <small class="text-muted">Seleccione la categoria en la que se encuentra clasificado de acuerdo a la ultima medición de Colciencias (A1, A, B, C o Reconocidos)</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Convocatoria minciencia</label>
+                        <select class="form-select" @bind="campoConvMinciencia">
+                            <option value="">Seleccione...</option>
+                            <option value="Convocatoria Nacional de Actualización y Transición para el Reconocimiento y Medición de Grupos de Investigación">Convocatoria Nacional de Actualización y Transición para el Reconocimiento y Medición de Grupos de Investigación</option>
+                            <option value="Desarrollo Tecnológico o de Innovación y para el Reconocimiento de Investigadores del SNCTeI">Desarrollo Tecnológico o de Innovación y para el Reconocimiento de Investigadores del SNCTeI</option>
+                        </select>
+                        <small class="text-muted">Seleccione la categoria en la que se encuentra clasificado de acuerdo a la ultima medición de Colciencias (A1, A, B, C o Reconocidos)</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nacionalidad</label>
+                        <input class="form-control" @bind="campoNacionalidad" />
+                        <small class="text-muted">Ingrese su nacionalidad</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Linea de investigación Principal</label>
+                        <select class="form-select" @bind="campoLineaInvestigacion">
+                            <option value="0">-- Seleccione una Linea de investigacion --</option>
+                            @foreach (var linea in listaLineasInvestigacion)
+                            {
+                                var idLinea = linea["id"]?.ToString() ?? string.Empty;
+                                var nombreLinea = linea["nombre"]?.ToString() ?? $"Linea {idLinea}";
+                                <option value="@idLinea">@nombreLinea</option>
+                            }
+                        </select>
+                        <small class="text-muted">Seleccione su linea de investigacion principal</small>
+                    </div>
+                </div>
+                <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>
+                <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </div>
+    }
+
+    @if (cargando)
+    {
+        <div class="d-flex justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    }
+
+    @* ───────── TABLA DE REGISTROS ───────── *@
+    @if (!cargando && registros.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Cedula</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Genero</th>
+                    <th>Cargo</th>
+                    <th>Fecha de nacimiento</th>
+                    <th>Correo</th>
+                    <th>Telefono</th>
+                    <th>url_cvlac</th>
+                    <th>Fecha actualizacion</th>
+                    <th>Escalafon</th>
+                    <th>Perfil</th>
+                    <th>Categoria minciencia</th>
+                    <th>Convocatoria minciencia</th>
+                    <th>Nacionalidad</th>
+                    <th>Linea de investigación</th>
+                    <th>Acciones</th>                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var reg in registros)
+                {
+                    <tr>
+                        <td>@reg["cedula"]</td>
+                        <td>@reg["nombres"]</td>
+                        <td>@reg["apellidos"]</td>
+                        <td>@reg["genero"]</td>
+                        <td>@reg["cargo"]</td>
+                        <td>@FormatearFecha(reg["fecha_nacimiento"])</td>
+                        <td>@reg["correo"]</td>
+                        <td>@reg["telefono"]</td>
+                        <td>@reg["url_cvlac"]</td>
+                        <td>@FormatearFecha(reg["fecha_actualizacion"])</td>
+                        <td>@reg["escalafon"]</td>
+                        <td>@reg["perfil"]</td>
+                        <td>@reg["categoria_minciencia"]</td>
+                        <td>@reg["convocatoria_minciencia"]</td>
+                        <td>@reg["nacionalidad"]</td>
+                        <td>@reg["linea_investigacion"]</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm me-1"
+                                    @onclick="() => EditarRegistro(reg)">
+                                Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm"
+                                    @onclick="() => EliminarRegistro(reg)">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @* ───────── MENSAJE CUANDO NO HAY DATOS ───────── *@
+    @if (!cargando && !registros.Any())
+    {
+        <div class="alert alert-warning">No se encontraron registros en la tabla docente.</div>
+    }
+</div>
+
+@code 
+{
+    // ───────── VARIABLES DE ESTADO ─────────
+    private List<Dictionary<string, object?>> registros = new();
+    private List<Dictionary<string, object?>> listaLineasInvestigacion = new();
+    private bool cargando = true;
+    private bool mostrarFormulario = false;
+    private bool editando = false;
+    private string mensaje = string.Empty;
+    private bool exito = false;
+
+    // Campos del formulario (ID se maneja internamente sin mostrarse)
+    private string campoCedula = string.Empty;
+    private string campoNombres = string.Empty;
+    private string campoApellidos = string.Empty;
+    private string campoGenero = string.Empty;
+    private string campoCargo = string.Empty;
+    private DateTime campoFechaNacimiento = DateTime.Today;
+    private string campoCorreo = string.Empty;
+    private string campoTelefono = string.Empty;
+    private string campoUrlCvlac = string.Empty;
+    private DateTime campoFechaActualizacion = DateTime.Today;
+    private string campoEscalafon = string.Empty;
+    private string campoPerfil = string.Empty; 
+    private string campoCatMinciencia = string.Empty;
+    private string campoConvMinciencia = string.Empty;
+    private string campoNacionalidad = string.Empty;
+    private int campoLineaInvestigacion = 0;
+
+    // ───────── CICLO DE VIDA ─────────
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarRegistros();
+        await CargarCatalogos();
+    }
+
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var lineasInvestigacion = await Api.ListarAsync("linea_investigacion");
+            listaLineasInvestigacion = lineasInvestigacion ?? new ();
+            
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error al cargar catálogos: {ex.Message}";
+            exito = false;
+        }
+    }
+
+    // ───────── METODOS ─────────
+    private async Task CargarRegistros()
+    {
+        cargando = true;
+        mensaje = string.Empty;
+        try
+        {
+            var resultado = await Api.ListarAsync("docente");
+            registros = resultado ?? new List<Dictionary<string, object?>>();
+        }
+        catch (Exception ex)
+        {
+            registros = new List<Dictionary<string, object?>>();
+            mensaje = $"Error al cargar los datos: {ex.Message}";
+            exito = false;
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+
+    private void NuevoRegistro()
+    {
+        editando = false;
+        campoCedula = string.Empty;
+        campoNombres = string.Empty;
+        campoApellidos = string.Empty;
+        campoGenero = string.Empty;
+        campoCargo = string.Empty;
+        campoFechaNacimiento = DateTime.Today;
+        campoCorreo = string.Empty;
+        campoTelefono = string.Empty;
+        campoUrlCvlac = string.Empty;
+        campoFechaActualizacion = DateTime.Today;
+        campoEscalafon = string.Empty;
+        campoPerfil = string.Empty;
+        campoCatMinciencia = string.Empty;
+        campoConvMinciencia = string.Empty;
+        campoNacionalidad = string.Empty;
+        campoLineaInvestigacion = 0;
+        mostrarFormulario = true;
+        mensaje = string.Empty;
+    }
+
+    private void EditarRegistro(Dictionary<string, object?> reg)
+    {
+        editando = true;
+        campoCedula = reg["cedula"]?.ToString() ?? string.Empty;
+        campoNombres = reg["nombres"]?.ToString() ?? string.Empty;
+        campoApellidos = reg["apellidos"]?.ToString() ?? string.Empty;
+        campoGenero = reg["genero"]?.ToString() ?? string.Empty;
+        campoCargo = reg["cargo"]?.ToString() ?? string.Empty;
+        campoFechaNacimiento = DateTime.TryParse(reg["fecha_nacimiento"]?.ToString(), out DateTime fn) ? fn : DateTime.Today;
+        campoCorreo = reg["correo"]?.ToString() ?? string.Empty;
+        campoTelefono = reg["telefono"]?.ToString() ?? string.Empty;
+        campoUrlCvlac = reg["url_cvlac"]?.ToString() ?? string.Empty;
+        campoFechaActualizacion = DateTime.Today;
+        campoEscalafon = reg["escalafon"]?.ToString() ?? string.Empty;
+        campoPerfil = reg["perfil"]?.ToString() ?? string.Empty;
+        campoCatMinciencia = reg["categoria_minciencia"]?.ToString() ?? string.Empty;
+        campoConvMinciencia = reg["convocatoria_minciencia"]?.ToString() ?? string.Empty;
+        campoNacionalidad = reg["nacionalidad"]?.ToString() ?? string.Empty;
+        campoLineaInvestigacion = int.TryParse(reg["linea_investigacion"]?.ToString(), out int linea) ? linea : 0;
+        mensaje = string.Empty;
+    }
+
+    private async Task GuardarRegistro()
+    {
+        var datos = new Dictionary<string, object?>
+        {
+            ["cedula"] = campoCedula,
+            ["nombres"] = campoNombres,
+            ["apellidos"] = campoApellidos,
+            ["genero"] = campoGenero,
+            ["cargo"] = campoCargo,
+            ["fecha_nacimiento"] = campoFechaNacimiento.ToString("yyyy-MM-dd"),
+            ["correo"] = campoCorreo,
+            ["telefono"] = campoTelefono,
+            ["url_cvlac"] = campoUrlCvlac,
+            ["fecha_actualizacion"] = DateTime.Today.ToString("yyyy-MM-dd"),
+            ["escalafon"] = campoEscalafon,
+            ["perfil"] = campoPerfil,
+            ["categoria_minciencia"] = campoCatMinciencia,
+            ["convocatoria_minciencia"] = campoConvMinciencia,
+            ["nacionalidad"] = campoNacionalidad,
+            ["linea_investigacion"] = campoLineaInvestigacion
+        };
+
+        if (editando)
+        {
+            var resultado = await Api.ActualizarAsync("docente", "cedula", campoCedula.ToString(), datos);
+            exito = resultado.exito;
+            mensaje = resultado.mensaje;
+        }
+        else
+        {
+            var resultado = await Api.CrearAsync("docente", datos);
+            exito = resultado.exito;
+            mensaje = resultado.mensaje;
+        }
+
+        if (exito)
+        {
+            mostrarFormulario = false;
+            await CargarRegistros();
+        }
+    }
+
+    private async Task EliminarRegistro(Dictionary<string, object?> reg)
+    {
+        string cedula = reg["cedula"]?.ToString() ?? "";
+        if (string.IsNullOrEmpty(cedula)) return;
+
+        var resultado = await Api.EliminarAsync("docente", "cedula", cedula);
+        exito = resultado.exito;
+        mensaje = resultado.mensaje;
+
+        if (exito)
+        {
+            await CargarRegistros();
+        }
+    }
+
+    private void Cancelar()
+    {
+        mostrarFormulario = false;
+        mensaje = string.Empty;
+    }
+
+    private string FormatearFecha(object? fechaObj)
+    {
+        if (fechaObj == null) return "";
+        if(fechaObj is DateTime dt) return dt.ToString("yyyy-MM-dd");
+        if(fechaObj is string str && DateTime.TryParse(str, out DateTime dt2)) return dt2.ToString("yyyy-MM-dd");
+        return "";
+    }
+
+    private string FormatearPresupuesto(object? valor)
+{
+    if (valor == null) return "$0";
+    double numero = Convert.ToDouble(valor);
+    // Formato con separadores de miles y sin decimales
+    return $"${numero.ToString("#,0").Replace(",", ".")}";
+}
+}
