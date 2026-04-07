@@ -1,0 +1,234 @@
+@page "/Palabras_clave"
+@rendermode InteractiveServer
+@inject FrontBlazor_AppiGenericaCsharp.Services.ApiService Api
+
+<PageTitle>Palabras clave</PageTitle>
+<div class="container mt-4">
+    <h3>Palabras clave</h3>
+
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+        <div class="alert @(exito ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+            @mensaje
+            <button type="button" class="btn-close" @onclick="() => mensaje = string.Empty"></button>
+        </div>
+    }
+    @if (!mostrarFormulario)
+    {
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nueva Palabra clave</button>
+    }
+    @if (mostrarFormulario)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                @(editando ? "Editar Palabra clave" : "Nueva palabra clave")
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Id del proyecto</label>
+                        <select class="form-select" @bind="campoProyecto">
+                            <option value="0">-- Seleccione un proyecto --</option>
+                            @foreach (var proy in listaProyectos)
+                            {
+                                var idProy = Convert.ToInt32(proy["id"]);
+                                var titulo = proy["titulo"]?.ToString();
+                                <option value="@idProy">@idProy - @titulo</option>
+                            }
+                        </select>
+                        <small class="text-muted">Proyecto a registrar</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Termino clave</label>
+                        <select class="form-select" @bind="campoTermino">
+                            <option value="">-- Seleccione un termino clave --</option>
+                            @foreach (var ter in listaTerminos)
+                            {
+                                var term = ter["termino"]? .ToString();
+                                <option value="@term">@term</option>
+                            }
+                        </select>
+                        <small class="text-muted">Seleccione el termino a usar</small>
+                    </div>
+                </div>
+                <button class="btn btn-success me-2" @onclick="GuardarRegistro">Guardar</button>
+                <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+            </div>
+        </div>
+    }
+    @if (cargando)
+    {
+        <div class="d-flex justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    }
+    @if (!cargando && registros.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Proyecto</th>
+                    <th>Termino Clave</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var reg in registros)
+                {
+                    <tr>
+                        <td>@reg["proyecto"]</td>
+                        <td>@reg["termino_clave"]</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm me-1" @onclick="() => EditarRegistro(reg)">Editar</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => EliminarRegistro(reg)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+    }
+
+    @if (!cargando && !registros.Any())
+    {
+        <div class="alert alert-warning">No se encontraron registros. Haga clic en "Nueva Palabra clave" para agregar uno.</div>
+    }
+</div>
+
+@code {
+    private List<Dictionary<string, object?>> registros = new();
+    private List<Dictionary<string, object?>> listaTerminos = new();
+    private List<Dictionary<string, object?>> listaProyectos = new();
+    private bool cargando = true;
+    private bool mostrarFormulario = false;
+    private bool editando = false;
+    private string mensaje = string.Empty;
+    private bool exito = false;
+    private int campoProyecto = 0;
+    private string campoTermino = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarCatalogos();
+        await CargarRegistros();
+    }
+
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var proyectos = await Api.ListarAsync("proyecto");
+            listaProyectos = proyectos ?? new();
+            var termino = await Api.ListarAsync("termino_clave");
+            listaTerminos = termino ?? new();
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error al cargar catálogos: {ex.Message}";
+            exito = false;
+        }
+    }
+
+    private async Task CargarRegistros()
+    {
+        cargando = true;
+        mensaje = string.Empty;
+        try
+        {
+            var resultado = await Api.ListarAsync("palabras_clave");
+            registros = resultado ?? new();
+        }
+        catch (Exception ex)
+        {
+            registros = new();
+            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
+            exito = false;
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+
+    private void NuevoRegistro()
+    {
+        editando = false;        
+        campoProyecto = 0;
+        campoTermino = string.Empty;
+        mostrarFormulario = true;
+        mensaje = string.Empty;
+    }
+
+    private void EditarRegistro(Dictionary<string, object?> reg)
+    {
+        editando = true;
+        campoProyecto = Convert.ToInt32(reg["proyecto"]);
+        campoTermino = reg["termino_clave"]?. ToString() ?? "";
+        mostrarFormulario = true;
+        mensaje = string.Empty;
+    }
+
+    private async Task GuardarRegistro()
+    {
+        var datos = new Dictionary<string, object?>
+        {
+            ["proyecto"] = campoProyecto,
+            ["termino_clave"] = campoTermino
+        };
+        if (campoProyecto <= 0)
+        {
+            mensaje = "Debe seleccionar un proyecto.";
+            exito = false;
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(campoTermino))
+        {
+            mensaje = "Debe seleccionar un término clave.";
+            exito = false;
+            return;
+        }
+        if (editando)
+        {
+            var resultado = await Api.ActualizarAsync("palabras_clave", "proyecto,termino_clave", $"{campoProyecto},{campoTermino}", datos);
+            exito = resultado.exito;
+            mensaje = resultado.mensaje;
+        }
+        else
+        {
+            var resultado = await Api.CrearAsync("palabras_clave", datos);
+            exito = resultado.exito;
+            mensaje = resultado.mensaje;
+        }
+
+        if (exito)
+        {
+            await CargarRegistros();
+            mostrarFormulario = false;
+        }
+    }
+
+    private async Task EliminarRegistro(Dictionary<string, object?> reg)
+    {
+        string proyecto = reg["proyecto"]?.ToString() ?? "";
+        string termino = reg["palabras_clave"]?.ToString() ?? "";
+        var resultado = await Api.EliminarAsync("proyecto_linea", "proyecto,palabras_clave", $"{proyecto},{termino}");
+        exito = resultado.exito;
+        mensaje = resultado.mensaje;
+        if (exito) await CargarRegistros();
+    }
+
+    private void Cancelar()
+    {
+        mostrarFormulario = false;
+        mensaje = string.Empty;
+    }
+
+    private string FormatearFecha(object? fechaObj)
+    {
+        if (fechaObj == null) return "";
+        if (fechaObj is DateTime dt) return dt.ToString("yyyy-MM-dd");
+        if (fechaObj is string str && DateTime.TryParse(str, out DateTime dt2)) return dt2.ToString("yyyy-MM-dd");
+        return "";
+    }
+}
