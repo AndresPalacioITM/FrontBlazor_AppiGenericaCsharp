@@ -16,7 +16,7 @@
 
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Aliado_Proyecto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Aliado_Proyecto</button>
     }
 
     @if (mostrarFormulario)
@@ -27,13 +27,31 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Aliado</label>
-                        <input class="form-control" type="number" @bind="campoAliado"/>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Aliado</label>
+                        <select class="form-select" @bind="campoAliado">
+                            <option value="0">-- Seleccione un aliado --</option>
+                            @foreach (var aliado in listaAliados)
+                            {
+                                var nitAliado = Convert.ToInt32(aliado["nit"]);
+                                var nombreAliado = aliado["nombre_contacto"]?.ToString() ?? $"Aliado {nitAliado}";
+                                <option value="@nitAliado">@nombreAliado</option>                           
+                            }
+                        </select>
+                        <small class="text-muted">Lista de aliados a seleccionar.</small>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Proyecto</label>
-                        <input class="form-control" type="number" @bind="campoProyecto"/>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Proyecto</label>
+                        <select class="form-control" @bind="campoProyecto">
+                            <option value="0">-- Seleccione un proyecto --</option>
+                            @foreach (var proyecto in listaProyectos)
+                            {
+                                var idProyecto = Convert.ToInt32(proyecto["id"]);
+                                var nombreProyecto = proyecto["titulo"]?.ToString() ?? $"Proyecto {idProyecto}";
+                                <option value="@idProyecto">@nombreProyecto</option>
+                            }
+                        </select>
+                        <small class="text-muted">Seleccione el proyecto</small>
                     </div>
                 </div>
                 <button class="btn btn-success" @onclick="GuardarRegistro">Guardar</button>
@@ -56,7 +74,7 @@
                 <tr>
                     <th>Aliado</th>
                     <th>Proyecto</th>
-                    <th>Acciones</th> <!-- se agrego -->
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,6 +103,8 @@
 @code
 {
     private List<Dictionary<string, object?>> registros = new();
+    private List<Dictionary<string, object?>> listaProyectos = new();
+    private List<Dictionary<string, object?>> listaAliados = new();
     private bool cargando = true;
     private bool mostrarFormulario = false;
     private bool editando = false;
@@ -95,9 +115,25 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CargarCatalogos();
         await CargarRegistros();
     }
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var proyectos = await Api.ListarAsync("proyecto");
+            listaProyectos = proyectos ?? new ();
 
+            var aliados = await Api.ListarAsync("aliado");
+            listaAliados = aliados ?? new ();
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error al cargar catálogos: {ex.Message}";
+            exito = false;
+        }
+    }
     private async Task CargarRegistros()
     {
         try

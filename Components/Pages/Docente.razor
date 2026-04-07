@@ -37,22 +37,22 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Cedula</label>
+                        <label class="form-label fw-bold">Cedula</label>
                         <input class="form-control" type="number" @bind="campoCedula" />
                         <small class="text-muted">Ingrese su número de Identificación </small>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="form-label">Nombres</label>
+                        <label class="form-label fw-bold">Nombres</label>
                         <input class="form-control" @bind="campoNombres" />
                         <small class="text-muted">Ingrese sus nombre(s) </small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Apellidos</label>
+                        <label class="form-label fw-bold">Apellidos</label>
                         <input class="form-control" @bind="campoApellidos" />
                         <small class="text-muted">Ingrese sus apellidos</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Genero</label>
+                        <label class="form-label fw-bold">Genero</label>
                         <select class="form-select" @bind="campoGenero">
                             <option value="">Seleccione...</option>
                             <option value="Masculino">Masculino</option>
@@ -62,7 +62,7 @@
                         <small class="text-muted">Seleccione su genero de acuerdo a su documento de identidad</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Cargo</label>
+                        <label class="form-label fw-bold">Cargo</label>
                         <select class="form-select" @bind="campoCargo">
                             <option value="">Seleccione...</option>
                             <option value="Público">Docente</option>
@@ -71,27 +71,27 @@
                         <small class="text-muted">Seleccione su cargo (docente o administrativo)</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Fecha de nacimiento</label>
+                        <label class="form-label fw-bold">Fecha de nacimiento</label>
                         <input class="form-control" type="date" @bind="campoFechaNacimiento" />
                         <small class="text-muted">Seleccione su fecha de nacimiento</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Correo</label>
+                        <label class="form-label fw-bold">Correo</label>
                         <input class="form-control" @bind="campoCorreo" />
                         <small class="text-muted">Coloque su correo electrónico institucional</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Telefono</label>
+                        <label class="form-label fw-bold">Telefono</label>
                         <input class="form-control" @bind="campoTelefono" />
                         <small class="text-muted">Ingrese su numero de contacto</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">url_cvlac</label>
+                        <label class="form-label fw-bold">url_cvlac</label>
                         <input class="form-control" @bind="campoUrlCvlac" />
                         <small class="text-muted">Copie la dirección de su hoja de vida en el Ministerio de Ciencia, Tecnología e Innovación (CvLac)</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Escalafon</label>
+                        <label class="form-label fw-bold">Escalafon</label>
                         <select class="form-select" @bind="campoEscalafon">
                             <option value="">Seleccione...</option>
                             <option value="Auxiliar">Auxiliar</option>
@@ -102,12 +102,12 @@
                         <small class="text-muted">Seleccione el escalafon al que pertenece (auxiliar, asistente, asociado, titular)</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Perfil</label>
+                        <label class="form-label fw-bold">Perfil</label>
                         <textarea class="form-control" rows="3" @bind="campoPerfil"></textarea>
                         <small class="text-muted">Ingrese una breve descripción de su perfil profesional</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Categoria minciencia</label>
+                        <label class="form-label fw-bold">Categoria minciencia</label>
                         <select class="form-select" @bind="campoCatMinciencia">
                             <option value="">Seleccione...</option>
                             <option value="A1">A1</option>
@@ -119,7 +119,7 @@
                         <small class="text-muted">Seleccione la categoria en la que se encuentra clasificado de acuerdo a la ultima medición de Colciencias (A1, A, B, C o Reconocidos)</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Convocatoria minciencia</label>
+                        <label class="form-label fw-bold">Convocatoria minciencia</label>
                         <select class="form-select" @bind="campoConvMinciencia">
                             <option value="">Seleccione...</option>
                             <option value="Convocatoria Nacional de Actualización y Transición para el Reconocimiento y Medición de Grupos de Investigación">Convocatoria Nacional de Actualización y Transición para el Reconocimiento y Medición de Grupos de Investigación</option>
@@ -128,7 +128,7 @@
                         <small class="text-muted">Seleccione la categoria en la que se encuentra clasificado de acuerdo a la ultima medición de Colciencias (A1, A, B, C o Reconocidos)</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Nacionalidad</label>
+                        <label class="form-label fw-bold">Nacionalidad</label>
                         <input class="form-control" @bind="campoNacionalidad" />
                         <small class="text-muted">Ingrese su nacionalidad</small>
                     </div>
@@ -190,22 +190,22 @@
                 @foreach (var reg in registros)
                 {
                     <tr>
-                        <td>@reg["cedula"]</td>
-                        <td>@reg["nombres"]</td>
-                        <td>@reg["apellidos"]</td>
-                        <td>@reg["genero"]</td>
-                        <td>@reg["cargo"]</td>
-                        <td>@FormatearFecha(reg["fecha_nacimiento"])</td>
-                        <td>@reg["correo"]</td>
-                        <td>@reg["telefono"]</td>
-                        <td>@reg["url_cvlac"]</td>
-                        <td>@FormatearFecha(reg["fecha_actualizacion"])</td>
-                        <td>@reg["escalafon"]</td>
-                        <td>@reg["perfil"]</td>
-                        <td>@reg["cat_minciencia"]</td>
-                        <td>@reg["conv_minciencia"]</td>
-                        <td>@reg["nacionalidad"]</td>
-                        <td>@reg["linea_investigacion_principal"]</td>
+                        <td class="text-center">@reg["cedula"]</td>
+                        <td class="text-center">@reg["nombres"]</td>
+                        <td class="text-center">@reg["apellidos"]</td>
+                        <td class="text-center">@reg["genero"]</td>
+                        <td class="text-center">@reg["cargo"]</td>
+                        <td class="text-center">@FormatearFecha(reg["fecha_nacimiento"])</td>
+                        <td class="text-center">@reg["correo"]</td>
+                        <td class="text-center">@reg["telefono"]</td>
+                        <td class="text-center">@reg["url_cvlac"]</td>
+                        <td class="text-center">@FormatearFecha(reg["fecha_actualizacion"])</td>
+                        <td class="text-center">@reg["escalafon"]</td>
+                        <td class="text-center">@reg["perfil"]</td>
+                        <td class="text-center">@reg["cat_minciencia"]</td>
+                        <td class="text-center">@reg["conv_minciencia"]</td>
+                        <td class="text-center">@reg["nacionalidad"]</td>
+                        <td class="text-center">@reg["linea_investigacion_principal"]</td>
                         <td>
                             <button class="btn btn-warning btn-sm me-1"
                                     @onclick="() => EditarRegistro(reg)">

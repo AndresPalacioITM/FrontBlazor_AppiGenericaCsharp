@@ -14,7 +14,7 @@
     }
     @if (!mostrarFormulario)
     {
-        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">Nuevo Docente_producto</button>
+        <button class="btn btn-primary mb-3" @onclick="NuevoRegistro">+ Nuevo Docente_producto</button>
     }
     @if (mostrarFormulario)
     {
@@ -25,12 +25,30 @@
             <div class="car-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <label class="form-label">Docente</label>
-                        <input class="form-control" type="number" @bind="campoDocente" disabled="@editando"/>
+                        <label class="form-label fw-bold"></label>
+                        <select class="form-select" @bind="campoDocente">
+                            <option value="0">-- Seleccione a un docente --</option>
+                            @foreach (var docente in listaDocentes)
+                            {
+                                var cedulaDocente = Convert.ToInt32(docente["cedula"]);
+                                var nombreCdocente = $"{docente["nombres"]} - {docente["apellidos"]} - {docente["cargo"]}";
+                                <option value="@cedulaDocente">@nombreCdocente</option>
+                            }
+                        </select>
+                        <small class="text-muted">Seleccione el profesor</small>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Producto</label>
-                        <input class="form-control" type="number" @bind="campoProducto"/>
+                        <label class="form-label fw-bold"></label>
+                        <select class="form-select" @bind="campoProducto">
+                            <option value="0">-- Seleccione un producto --</option>
+                            @foreach (var producto in listaProductos)
+                            {
+                                var idProducto = Convert.ToInt32(producto["id"]);
+                                var nombreProyecto = producto["nombre"]?.ToString() ?? $"Producto {idProducto}";
+                                <option value="@idProducto">@nombreProyecto</option>
+                            }
+                        </select>
+                        <small class="text-muted">Seleccione el producto</small>
                     </div>
                 </div>
                 <button class="btn btn-success" @onclick="GuardarRegistro">Guardar</button>
@@ -53,6 +71,7 @@
                 <tr>
                     <th>Docente</th>
                     <th>Producto</th>
+                    <th>Acciones</th>      
                 </tr>
             </thead>
             <tbody>
@@ -78,6 +97,8 @@
 @code
 {
     private List<Dictionary<string, object?>> registros = new();
+    private List<Dictionary<string, object?>> listaDocentes = new();
+    private List<Dictionary<string, object?>> listaProductos = new();
     private bool cargando = true;
     private bool mostrarFormulario = false;
     private bool editando = false;
@@ -89,7 +110,23 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CargarCatalogos();
         await CargarRegistros();
+    }
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var productos = await Api.ListarAsync("producto");
+            listaProductos = productos ?? new();
+            var docentes = await Api.ListarAsync("docente");
+            listaDocentes = docentes ?? new();
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error al cargar catálogos: {ex.Message}";
+            exito = false;
+        }
     }
 
     private async Task CargarRegistros()
@@ -134,8 +171,7 @@
             ["producto"] = campoProducto
         };
         if(editando)
-        {
-            datos.Remove("docente");
+        {            
             var resultado = await Api.ActualizarAsync("docente_producto","docente", campoDocente.ToString(), datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
