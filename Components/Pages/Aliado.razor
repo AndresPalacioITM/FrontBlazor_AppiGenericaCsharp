@@ -214,17 +214,6 @@
             ["telefono"] = campoTelefono,
             ["ciudad"] = campoCiudad
         };
-
-        if (editando)
-        {
-            // PUT /api/objetivo_desarrollo_sostenible/id/{valor}
-            // No incluimos el id en los datos porque es la clave
-            datos.Remove("nit");
-            var resultado = await Api.ActualizarAsync("aliado", "nit", campoNit.ToString(), datos);
-            exito = resultado.exito;
-            mensaje = resultado.mensaje;
-        };
-
         if (editando)
         {
             // PUT /api/aliado/nit/{valor}

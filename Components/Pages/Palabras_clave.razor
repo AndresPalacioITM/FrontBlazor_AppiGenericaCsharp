@@ -211,8 +211,8 @@
     private async Task EliminarRegistro(Dictionary<string, object?> reg)
     {
         string proyecto = reg["proyecto"]?.ToString() ?? "";
-        string termino = reg["palabras_clave"]?.ToString() ?? "";
-        var resultado = await Api.EliminarAsync("proyecto_linea", "proyecto,palabras_clave", $"{proyecto},{termino}");
+        string termino = reg["termino_clave"]?.ToString() ?? "";
+        var resultado = await Api.EliminarAsync("palabras_clave", "proyecto,termino_clave", $"{proyecto},{termino}");
         exito = resultado.exito;
         mensaje = resultado.mensaje;
         if (exito) await CargarRegistros();
