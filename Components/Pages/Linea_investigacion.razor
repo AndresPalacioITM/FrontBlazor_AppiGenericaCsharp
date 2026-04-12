@@ -206,7 +206,7 @@
         // DELETE /api/proyecto/id/{valor}
         var resultado = await Api.EliminarAsync("linea_investigacion", "id", id);
         exito = resultado.exito;
-        mensaje = resultado.mensaje;
+        mensaje =resultado.mensaje;
 
         if (exito)
         {

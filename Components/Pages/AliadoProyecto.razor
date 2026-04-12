@@ -33,7 +33,7 @@
                             <option value="0">-- Seleccione un aliado --</option>
                             @foreach (var aliado in listaAliados)
                             {
-                                var nitAliado = Convert.ToInt32(aliado["nit"]);
+                                var nitAliado = Convert.ToInt64(aliado["nit"]);
                                 var nombreAliado = aliado["nombre_contacto"]?.ToString() ?? $"Aliado {nitAliado}";
                                 <option value="@nitAliado">@nombreAliado</option>                           
                             }
@@ -100,8 +100,8 @@
         </div>
     }
 </div>
-@code
-{
+
+@code {
     private List<Dictionary<string, object?>> registros = new();
     private List<Dictionary<string, object?>> listaProyectos = new();
     private List<Dictionary<string, object?>> listaAliados = new();
@@ -110,7 +110,13 @@
     private bool editando = false;
     private string mensaje = string.Empty;
     private bool exito = false;
-    private int campoAliado = 0;
+
+    // Variables para la clave original (necesarias en edición)
+    private long aliadoOriginal;
+    private int proyectoOriginal;
+
+    // Variables del formulario
+    private long campoAliado = 0;
     private int campoProyecto = 0;
 
     protected override async Task OnInitializedAsync()
@@ -118,15 +124,16 @@
         await CargarCatalogos();
         await CargarRegistros();
     }
+
     private async Task CargarCatalogos()
     {
         try
         {
             var proyectos = await Api.ListarAsync("proyecto");
-            listaProyectos = proyectos ?? new ();
+            listaProyectos = proyectos ?? new();
 
             var aliados = await Api.ListarAsync("aliado");
-            listaAliados = aliados ?? new ();
+            listaAliados = aliados ?? new();
         }
         catch (Exception ex)
         {
@@ -134,17 +141,19 @@
             exito = false;
         }
     }
+
     private async Task CargarRegistros()
     {
+        cargando = true;   // ← importante: activar spinner
         try
         {
             var resultado = await Api.ListarAsync("aliado_proyecto");
-            registros = resultado ?? new List<Dictionary<string, object?>>();
+            registros = resultado ?? new();
         }
         catch (Exception ex)
         {
-            registros = new List<Dictionary<string, object?>>();
-            mensaje = $"No hay registros disponibles, por favor cree uno nuevo. Detalles del error: {ex.Message}";
+            registros = new();
+            mensaje = $"Error al cargar registros: {ex.Message}";
             exito = false;
         }
         finally
@@ -165,8 +174,12 @@
     private void EditarRegistro(Dictionary<string, object?> reg)
     {
         editando = true;
-        campoAliado = int.TryParse(reg["aliado"]?.ToString(), out int a) ? a : 0;
-        campoProyecto = int.TryParse(reg["proyecto"]?.ToString(), out int p) ? p : 0;
+        // Guardar los valores originales (clave compuesta)
+        aliadoOriginal = Convert.ToInt64(reg["aliado"]);
+        proyectoOriginal = Convert.ToInt32(reg["proyecto"]);  // ← corregido a Int32
+        // Cargar los valores en el formulario
+        campoAliado = aliadoOriginal;
+        campoProyecto = proyectoOriginal;
         mostrarFormulario = true;
         mensaje = string.Empty;
     }
@@ -181,10 +194,10 @@
 
         if (editando)
         {
-            //(clave compuesta)
-            string id = $"{campoAliado},{campoProyecto}";
-
-            var resultado = await Api.ActualizarAsync("aliado_proyecto", "composite", id, datos);
+            // Clave compuesta con los valores ORIGINALES (no los nuevos)
+            string camposClave = "aliado,proyecto";
+            string valoresClave = $"{aliadoOriginal},{proyectoOriginal}";
+            var resultado = await Api.ActualizarAsync("aliado_proyecto", camposClave, valoresClave, datos);
             exito = resultado.exito;
             mensaje = resultado.mensaje;
         }
@@ -204,16 +217,12 @@
 
     private async Task EliminarRegistro(Dictionary<string, object?> reg)
     {
-        // (clave compuesta)
-        string id = $"{reg["aliado"]},{reg["proyecto"]}";
-        var resultado = await Api.EliminarAsync("aliado_proyecto", "composite", id);
+        string aliado = reg["aliado"]?.ToString() ?? "";
+        string proyecto = reg["proyecto"]?.ToString() ?? "";
+        var resultado = await Api.EliminarAsync("aliado_proyecto", "aliado,proyecto", $"{aliado},{proyecto}");
         exito = resultado.exito;
         mensaje = resultado.mensaje;
-
-        if (exito)
-        {
-            await CargarRegistros();
-        }
+        if (exito) await CargarRegistros();
     }
 
     private void Cancelar()

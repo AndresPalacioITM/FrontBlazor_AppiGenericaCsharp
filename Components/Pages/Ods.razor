@@ -210,6 +210,7 @@
     private async Task EliminarRegistro(Dictionary<string, object?> reg)
     {
         string id = reg["id"]?.ToString() ?? "";
+        string nombre = reg["nombre"]?.ToString()?? "";
 
         // DELETE /api/objetivo_desarrollo_sostenible/id/{valor}
         var resultado = await Api.EliminarAsync("objetivo_desarrollo_sostenible", "id", id);

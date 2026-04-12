@@ -208,7 +208,8 @@
         string ods = reg["ods"]?.ToString() ?? "";
         var resultado = await Api.EliminarAsync("ods_proyecto", "proyecto,ods", $"{proyecto},{ods}");
         exito = resultado.exito;
-        mensaje = resultado.mensaje;
+        mensaje = resultado.mensaje ?? "Error sin mensaje especifico";
+        Console.WriteLine($"DELETE resultado: exito = {exito}, mensaje = {mensaje}");
         if (exito) await CargarRegistros();
     }
 
