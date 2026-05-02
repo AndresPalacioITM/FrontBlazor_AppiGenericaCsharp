@@ -1,0 +1,78 @@
+@page "/login"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="login-container">
+    <div class="login-card">
+
+        <h3 class="text-center mb-4">Iniciar Sesión</h3>
+
+        <div class="mb-3">
+            <label>Usuario</label>
+            <input class="form-control" @bind="loginModel.Username" />
+        </div>
+
+        <div class="mb-3">
+            <label>Contraseña</label>
+            <input type="password" class="form-control" @bind="loginModel.Password" />
+        </div>
+
+        <button class="btn btn-primary w-100" @onclick="IniciarSesion">
+            Ingresar
+        </button>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message mt-3">@errorMessage</div>
+        }
+
+    </div>
+</div>
+
+@code {
+    LoginModel loginModel = new();
+    string? errorMessage;
+
+    async Task IniciarSesion()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("https://tu-api.com/api/auth/login", loginModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
+
+                if (result != null && !string.IsNullOrEmpty(result.Token))
+                {
+                    await JS.InvokeVoidAsync("localStorage.setItem", "token", result.Token);
+                    Navigation.NavigateTo("/");
+                }
+                else
+                {
+                    errorMessage = "Respuesta inválida del servidor";
+                }
+            }
+            else
+            {
+                errorMessage = "Credenciales inválidas";
+            }
+        }
+        catch
+        {
+            errorMessage = "Error al conectar con el servidor";
+        }
+    }
+
+    public class LoginModel
+    {
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+
+    public class AuthResponse
+    {
+        public string Token { get; set; } = "";
+    }
+}
