@@ -1,0 +1,31 @@
+@inject NavigationManager Navigation
+@using FrontBlazor_AppiGenericaCsharp.Services
+
+<div class="d-flex align-items-center gap-3">
+    <span class="text-dark">
+        <i class="bi bi-person-circle"></i> @userName
+    </span>
+    <button class="btn btn-outline-danger btn-sm" @onclick="Logout">
+        Cerrar Sesión
+    </button>
+</div>
+
+@code {
+    private string userName = "Usuario";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await LocalStorageService.GetUserAsync();
+        if (!string.IsNullOrEmpty(user))
+        {
+            userName = user;
+        }
+    }
+
+    private async Task Logout()
+    {
+        await LocalStorageService.RemoveTokenAsync();
+        await LocalStorageService.RemoveUserAsync();
+        Navigation.NavigateTo("/login", true);
+    }
+}
