@@ -1,24 +1,44 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Net.Http.Headers;
 
 namespace FrontBlazor_AppiGenericaCsharp.Services
 {
     public class ApiService
     {
         private readonly HttpClient _http;
+        private readonly AuthService _authService;
         private readonly JsonSerializerOptions _jsonOptions = new()
         {
             PropertyNameCaseInsensitive = true
         };
-        public ApiService(HttpClient http)
+
+        public ApiService(HttpClient http, AuthService authService)
         {
             _http = http;
+            _authService = authService;
         }
+            
+        private async Task SetAuthorizationHeaderAsync()
+        {
+            var token = await _authService.GetToken();
+            if (!string.IsNullOrEmpty(token))
+            {
+                _http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+            else
+            {
+                _http.DefaultRequestHeaders.Authorization = null;
+            }
+        }
+
         public async Task<List<Dictionary<string, object?>>> ListarAsync(string tabla)
         {
             try
             {
                 // Hace GET a la API y obtiene la respuesta como JSON
+                await SetAuthorizationHeaderAsync();
                 var respuesta = await _http.GetFromJsonAsync<JsonElement>($"/api/{tabla}", _jsonOptions);
 
                 // Extrae la propiedad "datos" de la respuesta
@@ -40,6 +60,7 @@ namespace FrontBlazor_AppiGenericaCsharp.Services
         {
             try
             {
+                await SetAuthorizationHeaderAsync();
                 var respuesta = await _http.PostAsJsonAsync($"/api/{tabla}", datos);
                 var contenido = await respuesta.Content.ReadFromJsonAsync<JsonElement>(_jsonOptions);
 
@@ -65,6 +86,7 @@ namespace FrontBlazor_AppiGenericaCsharp.Services
         {
             try
             {
+                await SetAuthorizationHeaderAsync();
                 var respuesta = await _http.PutAsJsonAsync(
                     $"/api/{tabla}/{nombreClave}/{valorClave}", datos);
                 var contenido = await respuesta.Content.ReadFromJsonAsync<JsonElement>(_jsonOptions);
@@ -85,6 +107,7 @@ namespace FrontBlazor_AppiGenericaCsharp.Services
         {
             try
             {
+                await SetAuthorizationHeaderAsync();
                 var respuesta = await _http.DeleteAsync(
                     $"/api/{tabla}/{nombreClave}/{valorClave}");
                 var contenido = await respuesta.Content.ReadFromJsonAsync<JsonElement>(_jsonOptions);

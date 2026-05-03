@@ -1,4 +1,10 @@
 using FrontBlazor_AppiGenericaCsharp.Components;
+using FrontBlazor_AppiGenericaCsharp.Services;
+using FrontBlazor_AppiGenericaCsharp.Providers;
+using Microsoft.AspNetCore.Components.Authorization;
+using Blazored.LocalStorage;
+using FrontBlazor_AppiGenericaCsharp.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +21,24 @@ builder.Services.AddScoped(sp => new HttpClient
 
 // Registrar el servicio ApiService para manejar las llamadas a la API
 builder.Services.AddScoped<FrontBlazor_AppiGenericaCsharp.Services.ApiService>();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddCascadingAuthenticationState(); 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.LogoutPath = "/logout";
+        options.AccessDeniedPath = "/access-denied";
+        options.Cookie.Name = "BlazorAuth";
+        options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        options.SlidingExpiration = true;
+    });
+builder.Services.AddScoped<AuthService>();
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+
 
 var app = builder.Build();
 
@@ -28,6 +52,8 @@ if (!app.Environment.IsDevelopment())
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

@@ -1,0 +1,104 @@
+@page "/login"
+@layout Components.Layout.PublicLayout
+@using FrontBlazor_AppiGenericaCsharp.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="login-container">
+    <div class="login-card">
+        <h3 class="text-center mb-4">Iniciar Sesión</h3>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <input class="form-control" @bind="email" />
+            <small class="form-text text-muted">Ingrese su dirección de email</small>
+        </div>
+
+        <div class="mb-3">
+            <label>Contraseña</label>
+            <input type="password" class="form-control" @bind="password" />
+            <small class="form-text text-muted">Ingrese su contraseña</small>
+        </div>
+
+        <button class="btn btn-primary w-100" @onclick="IniciarSesion" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <span>Procesando...</span>
+            }
+            else
+            {
+                <span>Ingresar</span>
+            }
+        </button>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message mt-3 alert alert-danger">
+                @errorMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="success-message mt-3 alert alert-success">
+                @successMessage
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string email = "admin@ejemplo.com";
+    private string password = "admin123";
+    private string? errorMessage;
+    private string? successMessage;
+    private bool isLoading = false;
+
+    private async Task IniciarSesion()
+    {
+        errorMessage = null;
+        successMessage = null;
+        isLoading = true;
+        StateHasChanged();
+
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        {
+            errorMessage = "Por favor ingrese email y contraseña";
+            isLoading = false;
+            StateHasChanged();
+            return;
+        }
+
+        try
+        {
+            successMessage = "Verificando credenciales...";
+            StateHasChanged();
+
+            bool loginExitoso = await AuthService.Login(email, password);
+
+            if (loginExitoso)
+            {
+                successMessage = "¡Login exitoso! Redirigiendo...";
+                StateHasChanged();
+                await Task.Delay(500);
+                Navigation.NavigateTo("/", true);
+            }
+            else
+            {
+                errorMessage = "Credenciales inválidas. Verifique email y contraseña.";
+                successMessage = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al iniciar sesión: {ex.Message}");
+            errorMessage = "Ocurrió un error inesperado. Intente nuevamente.";
+            successMessage = null;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}

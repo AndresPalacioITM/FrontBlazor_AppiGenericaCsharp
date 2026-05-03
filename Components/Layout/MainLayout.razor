@@ -1,23 +1,31 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
+@inject AuthService AuthService
 @using FrontBlazor_AppiGenericaCsharp.Services
 
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
-
     <main>
         <div class="top-row px-4 d-flex justify-content-between align-items-center">
             <span>Frontend Blazor - API GenericaCsharp</span>
-            <AuthNavMenu /> @* BOton de cerrar sesion*@
+
+            @if (isAuthenticated)
+            {
+                <span class="text-light me-2">Hola, @userEmail</span>
+                <button class="btn btn-sm btn-danger" @onclick="Logout">Cerrar sesión</button>
+            }
+            else
+            {
+                <a href="/login" class="btn btn-sm btn-primary">Iniciar sesión</a>
+            }
         </div>
 
         <article class="content px-4">
             @Body
         </article>
 
-        <!-- Footer: aparece en todas las páginas -->
         <footer class="border-top mt-4 pt-3 text-center text-muted small">
             <span class="fw-light">🚀 Equipo de desarrollo:</span>
             <span>Andres Eduardo Palacio Del Rio</span>
@@ -36,12 +44,29 @@
 </div>
 
 @code {
-    protected override async Task OnInitializeAsync()
+    private bool isAuthenticated = false;
+    private string userEmail = "";
+    private bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var token = await LocalStorageService.GetTokenAsync();
-        if (string.IsNullOrEmpty(token))
+        if (firstRender)
         {
-            Navigation.NavigateTo("/login", true);
+            var token = await AuthService.GetToken();
+            if (!string.IsNullOrEmpty(token))
+            {
+                isAuthenticated = true;
+                // Opcional: obtener email del token si lo tienes
+                userEmail = "Usuario";
+            }
+            isLoading = false;
+            StateHasChanged();
         }
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        Navigation.NavigateTo("/login", true);
     }
 }
