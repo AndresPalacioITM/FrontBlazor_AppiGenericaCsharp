@@ -72,9 +72,9 @@ public class AuthService
     private class LoginResponse
     {
         public int estado { get; set; } 
-        public string mensaje { get; set; }
-        public string usuario { get; set; }
-        public string token { get; set; } 
+        public string? mensaje { get; set; }
+        public string? usuario { get; set; }
+        public string? token { get; set; } 
         public DateTime expiracion { get; set; }
     }
 }
