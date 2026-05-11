@@ -46,7 +46,7 @@
 @code {
     private bool isAuthenticated = false;
     private string userEmail = "";
-    private bool isLoading = true;
+    @* private bool isLoading = true; *@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -59,7 +59,7 @@
                 // Opcional: obtener email del token si lo tienes
                 userEmail = "Usuario";
             }
-            isLoading = false;
+            @* isLoading = false; *@
             StateHasChanged();
         }
     }

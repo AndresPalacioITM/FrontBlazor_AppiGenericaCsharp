@@ -43,7 +43,7 @@ public class AuthService
 
         // 3. Leer la respuesta y extraer el token
         var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        string token = result?.token;
+        string? token = result?.token;
 
         if (string.IsNullOrEmpty(token))
             return false;
@@ -65,7 +65,7 @@ public class AuthService
     // Obtener el token guardado (para usarlo en ApiService)
     public async Task<string> GetToken()
     {
-        return await _localStorage.GetItemAsync<string>("authToken");
+        return await _localStorage.GetItemAsync<string>("authToken") ?? string.Empty;
     }
 
     // Clase que mapea la respuesta de tu API

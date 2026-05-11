@@ -17,7 +17,7 @@ namespace FrontBlazor_AppiGenericaCsharp.Providers
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            string token = await _localStorage.GetItemAsync<string>("authToken");
+            string? token = await _localStorage.GetItemAsync<string>("authToken");
 
             if (string.IsNullOrEmpty(token))
             {
@@ -58,7 +58,7 @@ namespace FrontBlazor_AppiGenericaCsharp.Providers
             {
                 foreach (var kvp in keyValuePairs)
                 {
-                    claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
+                    claims.Add(new Claim(kvp.Key, kvp.Value?.ToString() ?? ""));
                 }
             }
             return claims;

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplicación Genérica C# - Blazor</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link href="css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="app">
+        <p style="margin: 20px;">Cargando aplicación...</p>
+    </div>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            <p>Se ha producido un error en la aplicación.</p>
+        </environment>
+        <environment include="Development">
+            <p>Se ha producido una excepción sin controlar. Ver la consola del navegador para más detalles.</p>
+        </environment>
+        <a href="" class="reload">Recargar</a>
+        <a class="dismiss">✖</a>
+    </div>
+
+    <script src="_framework/blazor.web.js"></script>
+</body>
+</html>

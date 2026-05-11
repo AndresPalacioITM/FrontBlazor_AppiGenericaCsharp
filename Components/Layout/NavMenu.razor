@@ -128,7 +128,14 @@
                 <div class="nav-item px-3">
                     <span class="nav-link text-light">
                         <span class="bi bi-person-circle" aria-hidden="true"></span>
-                        @context.User.Identity.Name
+                        @if (context.User?.Identity?.IsAuthenticated == true)
+                        {
+                            <span>@context.User.Identity.Name</span>
+                        }
+                        else
+                        {
+                            <span>No autenticado</span>
+                        }
                     </span>
                 </div>
                 <div class="nav-item px-3">
