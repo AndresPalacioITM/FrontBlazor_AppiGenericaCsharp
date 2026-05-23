@@ -62,16 +62,19 @@ namespace FrontBlazor_AppiGenericaCsharp.Services
             {
                 await SetAuthorizationHeaderAsync();
                 var respuesta = await _http.PostAsJsonAsync($"/api/{tabla}", datos);
-                var contenido = await respuesta.Content.ReadFromJsonAsync<JsonElement>(_jsonOptions);
+                var raw = await respuesta.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(raw))
+                    return (respuesta.IsSuccessStatusCode, "Operación completada.");
+
+                var contenido = JsonSerializer.Deserialize<JsonElement>(raw, _jsonOptions);
 
                 string mensaje = contenido.TryGetProperty("mensaje", out JsonElement msg)
                     ? msg.GetString() ?? "Operacion completada."
                     : "Operacion completada.";
                 if (!respuesta.IsSuccessStatusCode)
                 {
-                    var errorContent = await respuesta.Content.ReadAsStringAsync();
-                    Console.WriteLine($"ERROR API ({respuesta.StatusCode}): {errorContent}");
-                    return (false, $"Error {respuesta.StatusCode}: {errorContent}");
+                    Console.WriteLine($"ERROR API ({respuesta.StatusCode}): {raw}");
+                    return (false, $"Error {respuesta.StatusCode}: {raw}");
                 }
                 return (respuesta.IsSuccessStatusCode, mensaje);
             }
@@ -89,7 +92,11 @@ namespace FrontBlazor_AppiGenericaCsharp.Services
                 await SetAuthorizationHeaderAsync();
                 var respuesta = await _http.PutAsJsonAsync(
                     $"/api/{tabla}/{nombreClave}/{valorClave}", datos);
-                var contenido = await respuesta.Content.ReadFromJsonAsync<JsonElement>(_jsonOptions);
+                var raw = await respuesta.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(raw))
+                    return (respuesta.IsSuccessStatusCode, "Operación completada.");
+
+                var contenido = JsonSerializer.Deserialize<JsonElement>(raw, _jsonOptions);
 
                 string mensaje = contenido.TryGetProperty("mensaje", out JsonElement msg)
                     ? msg.GetString() ?? "Operacion completada."
@@ -110,7 +117,11 @@ namespace FrontBlazor_AppiGenericaCsharp.Services
                 await SetAuthorizationHeaderAsync();
                 var respuesta = await _http.DeleteAsync(
                     $"/api/{tabla}/{nombreClave}/{valorClave}");
-                var contenido = await respuesta.Content.ReadFromJsonAsync<JsonElement>(_jsonOptions);
+                var raw = await respuesta.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(raw))
+                    return (respuesta.IsSuccessStatusCode, "Operación completada.");
+
+                var contenido = JsonSerializer.Deserialize<JsonElement>(raw, _jsonOptions);
 
                 string mensaje = contenido.TryGetProperty("mensaje", out JsonElement msg)
                     ? msg.GetString() ?? "Operacion completada."

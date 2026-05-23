@@ -16,9 +16,10 @@ builder.Services.AddRazorComponents()
 // La URL base apunta a la API ApiGenericaCsharp que corre en el puerto 5034
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("http://localhost:5230")
+    BaseAddress = new Uri(
+        builder.Configuration.GetValue<string>("ApiBaseUrl")
+        ?? "http://localhost:5230")
 });
-
 // Registrar el servicio ApiService para manejar las llamadas a la API
 builder.Services.AddScoped<FrontBlazor_AppiGenericaCsharp.Services.ApiService>();
 builder.Services.AddBlazoredLocalStorage();
